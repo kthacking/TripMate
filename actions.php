@@ -10,7 +10,7 @@ $role = $_SESSION['role'];
 if (isset($_GET['action'])) {
     $action = $_GET['action'];
 
-    // HANDLER: Join Trip (Student)
+    // HANDLER:  Join Trip (Student)
     if ($action == 'join_trip' && isset($_GET['trip_id']) && $role == 'student') {
         $trip_id = intval($_GET['trip_id']);
         // Check if already joined
