@@ -23,6 +23,12 @@ CREATE TABLE IF NOT EXISTS trips (
     end_date DATE NOT NULL,
     cost DECIMAL(10, 2) NOT NULL,
     description TEXT,
+    max_participants INT DEFAULT 0,
+    registration_deadline DATE NULL,
+    trip_type VARCHAR(50) DEFAULT 'Leisure',
+    comfort_level INT DEFAULT 3,
+    included_items TEXT NULL,
+    not_included_items TEXT NULL,
     created_by INT NOT NULL,
     status ENUM('active', 'cancelled', 'completed') DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -61,6 +67,16 @@ CREATE TABLE IF NOT EXISTS media (
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE,
     FOREIGN KEY (uploaded_by) REFERENCES users(id) ON DELETE CASCADE
+);
+-- Notifications Table
+CREATE TABLE IF NOT EXISTS notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    message VARCHAR(255) NOT NULL,
+    link VARCHAR(255) NULL,
+    is_read TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Insert Default Admin (Password: admin123)
