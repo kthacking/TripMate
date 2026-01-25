@@ -3,7 +3,7 @@ require_once 'db.php';
 require_once 'auth.php';
 session_start();
 checkLogin();
-include 'header.php';
+// Header included later to allow redirects
 
 if (!isset($_GET['id'])) {
     header("Location: dashboard.php");
@@ -29,7 +29,9 @@ if ($role == 'student') {
     if ($e_check->num_rows > 0) $has_access = true;
 }
 
+
 if (!$has_access) {
+    include 'header.php';
     echo "<div class='container section'>Access Denied</div>";
     include 'footer.php';
     exit();
@@ -70,6 +72,8 @@ if (isset($_POST['delete_media']) && ($role == 'admin' || $role == 'tripmaker' |
     header("Location: trip_gallery.php?id=$trip_id&msg=deleted");
     exit();
 }
+
+include 'header.php';
 ?>
 
 <div class="container section">
@@ -146,7 +150,7 @@ if (isset($_POST['delete_media']) && ($role == 'admin' || $role == 'tripmaker' |
                     $type = $media['type'];
                     $file_url = htmlspecialchars($media['file_path']);
                     
-                    echo '<div class="masonry-item" data-type="'.$type.'" onclick="handleItemClick(event, this)">';
+                    echo '<div class="masonry-item" data-type="'.$type.'" data-src="'.$file_url.'" onclick="handleItemClick(event, this)">';
                     
                     // Hidden Checkbox Input
                     echo '<input type="checkbox" name="selected_media[]" value="'.$media['id'].'" data-file="'.$file_url.'" class="hidden-cb" style="display:none;">';
@@ -204,7 +208,8 @@ if (isset($_POST['delete_media']) && ($role == 'admin' || $role == 'tripmaker' |
         <div class="lightbox-nav lightbox-next" onclick="changeImage(1)"><i class="ri-arrow-right-s-line"></i></div>
         
         <div class="lightbox-content-wrapper">
-            <img id="lightboxImg" src="" class="lightbox-image" alt="Full Preview">
+            <img id="lightboxImg" src="" class="lightbox-media" alt="Full Preview" style="display:none;">
+            <video id="lightboxVideo" class="lightbox-media" controls autoplay style="display:none;"></video>
         </div>
     </div>
 
@@ -239,7 +244,7 @@ if (isset($_POST['delete_media']) && ($role == 'admin' || $role == 'tripmaker' |
             }
         });
         
-        // Re-index images for lightbox after filter
+        // Re-index media for lightbox after filter
         updateLightboxIndex();
     }
 
@@ -260,29 +265,23 @@ if (isset($_POST['delete_media']) && ($role == 'admin' || $role == 'tripmaker' |
             item.classList.remove('selected');
         }
         
-        // If not in selection mode, enter it implicitly if checking?
-        // Requirement says "Clicking Download button... gallery should enter selection mode".
-        // But if user clicks checkbox directly, it feels natural to enter selection mode.
-        // Let's force selection mode visual if a check occurs.
         if(selectionMode === false && hiddenCb.checked) {
             enterSelectionMode();
         }
     }
 
     function handleItemClick(event, item) {
-        // If items clicked:
-        // 1. If hitting controls (stopPropagation handles most, but double check)
+        // If clicking checkbox/actions directly, stop
         if(event.target.closest('.masonry-checkbox-container') || event.target.closest('.masonry-actions')) return;
 
-        // 2. If Selection Mode is Active -> Toggle Select
         if (selectionMode) {
             toggleSelect(item);
         } else {
-            // 3. Normal Mode -> Open Lightbox
+            // Normal Mode -> Open Lightbox
             let type = item.dataset.type;
-            if(type === 'image') {
-                let imgUrl = item.querySelector('img').src;
-                openLightbox(imgUrl);
+            if(type === 'image' || type === 'video') {
+                let src = item.dataset.src;
+                openLightbox(src, type);
             }
         }
     }
@@ -290,12 +289,8 @@ if (isset($_POST['delete_media']) && ($role == 'admin' || $role == 'tripmaker' |
     // --- DOWNLOAD FLOW ---
     function triggerDownloadFlow() {
         if (!selectionMode) {
-            // State 1: Enter Selection Mode
             enterSelectionMode();
-            // Visual feedback?
-            // Maybe show a quick toast or just rely on the 'X' appearing.
         } else {
-            // State 2: Already Selecting -> User clicked Download again -> Perform Download
             performDownloadCheck();
         }
     }
@@ -303,20 +298,16 @@ if (isset($_POST['delete_media']) && ($role == 'admin' || $role == 'tripmaker' |
     function enterSelectionMode() {
         selectionMode = true;
         document.body.classList.add('selection-mode');
-        // Show Cancel Button
         document.getElementById('cancelSelBtn').style.display = 'inline-flex';
     }
 
     function exitSelectionMode() {
         selectionMode = false;
         document.body.classList.remove('selection-mode');
-        // Hide Cancel Button
         document.getElementById('cancelSelBtn').style.display = 'none';
         
-        // Clear All Selections
         document.querySelectorAll('input.hidden-cb:checked').forEach(cb => {
             cb.checked = false;
-            // Clear visual state
             let item = cb.closest('.masonry-item');
             if(item) {
                 item.classList.remove('selected');
@@ -332,11 +323,9 @@ if (isset($_POST['delete_media']) && ($role == 'admin' || $role == 'tripmaker' |
             alert("No images selected. Please select images to download.");
             return;
         } else if (selected.length === 1) {
-            // Direct Download
             forceDownload(selected[0].dataset.file);
             exitSelectionMode();
         } else {
-            // Modal Choice
             document.getElementById('dlCount').innerText = selected.length;
             document.getElementById('dlModal').style.display = 'flex';
         }
@@ -365,7 +354,6 @@ if (isset($_POST['delete_media']) && ($role == 'admin' || $role == 'tripmaker' |
             document.body.removeChild(form);
         }
         
-        // Close Modal & Reset
         document.getElementById('dlModal').style.display='none';
         exitSelectionMode();
     }
@@ -380,55 +368,84 @@ if (isset($_POST['delete_media']) && ($role == 'admin' || $role == 'tripmaker' |
     }
 
     // --- OTHER ---
-    function deleteSelected() { /* ... existing ... */ 
+    function deleteSelected() { 
         if (document.querySelectorAll('input.hidden-cb:checked').length === 0) return alert('Select files');
         if (confirm('Delete selected items?')) { document.getElementById('galleryForm').submit(); }
     }
 
-    // --- LIGHTBOX LOGIC (Existing) ---
-    let currentImageIndex = 0;
-    let galleryImages = [];
+    // --- LIGHTBOX LOGIC ---
+    let currentMediaIndex = 0;
+    let galleryItems = []; // Stores {src, type}
 
     function updateLightboxIndex() {
-        galleryImages = [];
-        document.querySelectorAll('.masonry-item[data-type="image"]').forEach(item => {
+        galleryItems = [];
+        document.querySelectorAll('.masonry-item').forEach(item => {
             if(item.style.display !== 'none') {
-                let url = item.querySelector('img').src;
-                galleryImages.push(url);
+                let t = item.dataset.type;
+                if(t === 'image' || t === 'video') {
+                    galleryItems.push({
+                        src: item.dataset.src,
+                        type: t
+                    });
+                }
             }
         });
     }
 
-    function openLightbox(url) {
+    function openLightbox(src, type) {
         updateLightboxIndex(); 
-        currentImageIndex = galleryImages.indexOf(url);
-        showLightboxImage(url);
+        // Find index
+        currentMediaIndex = galleryItems.findIndex(i => i.src === src);
+        if(currentMediaIndex === -1) currentMediaIndex = 0;
+
+        showLightboxMedia(src, type);
+        
         document.getElementById('lightbox').classList.add('active');
         document.body.style.overflow = 'hidden';
         document.addEventListener('keydown', lightboxKeys);
     }
 
     function closeLightbox() {
+        // Stop video
+        let vid = document.getElementById('lightboxVideo');
+        vid.pause();
+        vid.src = "";
+
         document.getElementById('lightbox').classList.remove('active');
         document.body.style.overflow = 'auto'; 
         document.removeEventListener('keydown', lightboxKeys);
     }
 
-    function showLightboxImage(url) {
+    function showLightboxMedia(src, type) {
         let img = document.getElementById('lightboxImg');
-        img.style.opacity = 0;
-        setTimeout(() => {
-            img.src = url;
-            img.onload = () => { img.style.opacity = 1; };
-        }, 200);
+        let vid = document.getElementById('lightboxVideo');
+        
+        // Reset
+        img.style.display = 'none';
+        vid.style.display = 'none';
+        vid.pause();
+
+        if(type === 'image') {
+            img.style.opacity = 0;
+            img.style.display = 'block';
+            img.src = src;
+            setTimeout(() => { img.style.opacity = 1; }, 50);
+        } 
+        else if(type === 'video') {
+            vid.style.display = 'block';
+            vid.src = src;
+            vid.play(); // Auto-play
+        }
     }
 
     function changeImage(dir) {
-        if(galleryImages.length === 0) return;
-        currentImageIndex += dir;
-        if(currentImageIndex >= galleryImages.length) currentImageIndex = 0;
-        if(currentImageIndex < 0) currentImageIndex = galleryImages.length - 1;
-        showLightboxImage(galleryImages[currentImageIndex]);
+        if(galleryItems.length === 0) return;
+        currentMediaIndex += dir;
+        if(currentMediaIndex >= galleryItems.length) currentMediaIndex = 0;
+        if(currentMediaIndex < 0) currentMediaIndex = galleryItems.length - 1;
+        
+        let item = galleryItems[currentMediaIndex];
+        showLightboxMedia(item.src, item.type);
     }
 
     function lightboxKeys(e) {

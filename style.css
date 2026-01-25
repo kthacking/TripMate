@@ -1139,4 +1139,16 @@ ul {
  . s e l e c t i o n - m o d e   . m a s o n r y - c h e c k b o x   {  
          t r a n s f o r m :   s c a l e ( 1 . 2 ) ;  
  }  
+ . l i g h t b o x - m e d i a   {  
+         m a x - w i d t h :   1 0 0 % ;  
+         m a x - h e i g h t :   8 5 v h ;  
+         b o r d e r - r a d i u s :   8 p x ;  
+         b o x - s h a d o w :   0   2 0 p x   5 0 p x   r g b a ( 0 , 0 , 0 , 0 . 5 ) ;  
+         o b j e c t - f i t :   c o n t a i n ;  
+         t r a n s i t i o n :   o p a c i t y   0 . 3 s   e a s e ;  
+ }  
+ v i d e o . l i g h t b o x - m e d i a   {  
+         w i d t h :   8 0 v w ;   / *   E n s u r e   v i d e o   t a k e s   r e a s o n a b l e   w i d t h   * /  
+         b a c k g r o u n d :   b l a c k ;  
+ }  
  
