@@ -43,17 +43,32 @@ if (isset($_FILES['media_file'])) {
     $target_dir = "uploads/";
     if (!file_exists($target_dir)) mkdir($target_dir, 0777, true);
     
-    $file_name = basename($_FILES["media_file"]["name"]);
+    // Check if multiple files
+    $count = is_array($_FILES['media_file']['name']) ? count($_FILES['media_file']['name']) : 1;
     $file_type = isset($_POST['media_type']) ? $_POST['media_type'] : 'image';
-    $target_file = $target_dir . time() . "_" . $file_name;
-    
-    if (move_uploaded_file($_FILES["media_file"]["tmp_name"], $target_file)) {
-        $stmt = $conn->prepare("INSERT INTO media (trip_id, uploaded_by, file_path, type) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("iiss", $trip_id, $user_id, $target_file, $file_type);
-        $stmt->execute();
-        header("Location: trip_gallery.php?id=$trip_id&msg=uploaded");
-        exit();
+
+    for ($i = 0; $i < $count; $i++) {
+        $name = is_array($_FILES['media_file']['name']) ? $_FILES['media_file']['name'][$i] : $_FILES['media_file']['name'];
+        $tmp = is_array($_FILES['media_file']['tmp_name']) ? $_FILES['media_file']['tmp_name'][$i] : $_FILES['media_file']['tmp_name'];
+        $size = is_array($_FILES['media_file']['size']) ? $_FILES['media_file']['size'][$i] : $_FILES['media_file']['size'];
+        
+        if (empty($name)) continue;
+
+        // Check file size (Max 50MB)
+        if ($size > 50000000) {
+            continue; // Skip large files or handle error
+        }
+
+        $target_file = $target_dir . time() . "_" . $i . "_" . basename($name); // Add index to prevent overwrite timestamp collision
+        
+        if (move_uploaded_file($tmp, $target_file)) {
+            $stmt = $conn->prepare("INSERT INTO media (trip_id, uploaded_by, file_path, type) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("iiss", $trip_id, $user_id, $target_file, $file_type);
+            $stmt->execute();
+        }
     }
+    header("Location: trip_gallery.php?id=$trip_id&msg=uploaded");
+    exit();
 }
 
 // DELETE
@@ -121,8 +136,8 @@ include 'header.php';
             </div>
             <form method="POST" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label class="form-label">Select File</label>
-                    <input type="file" name="media_file" class="form-control" required>
+                    <label class="form-label">Select Files (Max 50MB each)</label>
+                    <input type="file" name="media_file[]" class="form-control" multiple required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Type</label>
