@@ -55,7 +55,7 @@ if (isset($_GET['action'])) {
         $new_status = ($action == 'approve_request') ? 'approved' : 'rejected';
 
         // Fetch Trip & Student Info first to verify and notify
-        $sql = "SELECT e.student_id, t.created_by, t.title 
+        $sql = "SELECT e.student_id, e.trip_id, t.created_by, t.title 
                 FROM enrollments e 
                 JOIN trips t ON e.trip_id = t.id 
                 WHERE e.id = $req_id";
@@ -70,7 +70,9 @@ if (isset($_GET['action'])) {
                 
                 // Notify Student
                 if ($new_status == 'approved') {
-                    sendNotification($conn, $data['student_id'], "You've been approved for " . $data['title'], "trip.php?id=".$data['student_id']); // Link effectively to trip (need trip_id but simplified)
+                    sendNotification($conn, $data['student_id'], "You've been approved for " . $data['title'], "trip.php?id=".$data['trip_id']);
+                } else {
+                    sendNotification($conn, $data['student_id'], "Your request for " . $data['title'] . " was declined.", "dashboard.php");
                 }
             }
         }
