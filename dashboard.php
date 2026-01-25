@@ -14,7 +14,7 @@ $notifs = $conn->query("SELECT * FROM notifications WHERE user_id=$user_id ORDER
 
 <div class="container dashboard-container">
     
-    <!-- DASHBOARD HEADER & NOTIFICATIONS -->
+    <!-- DASHBOARD HEADER -->
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
         <div>
             <h1 style="color: var(--secondary-color);">Dashboard</h1>
@@ -22,44 +22,11 @@ $notifs = $conn->query("SELECT * FROM notifications WHERE user_id=$user_id ORDER
         </div>
         
         <div style="display: flex; gap: 20px; align-items: center;">
-            <!-- Notifications Dropdown (Simplified as a list for now) -->
-            <div style="position: relative;">
-                <div style="background: white; padding: 10px; border-radius: 50%; box-shadow: var(--shadow-sm); cursor: pointer;" onclick="document.getElementById('notif-box').classList.toggle('hidden');">
-                    <i class="ri-notification-3-line" style="font-size: 1.2rem;"></i>
-                    <?php 
-                    $unread = $conn->query("SELECT COUNT(*) as c FROM notifications WHERE user_id=$user_id AND is_read=0")->fetch_assoc()['c'];
-                    if($unread > 0) echo '<div class="notification-dot"></div>';
-                    ?>
-                </div>
-
-                <div id="notif-box" class="hidden" style="position: absolute; right: 0; top: 50px; width: 300px; background: white; border-radius: 12px; box-shadow: var(--shadow-lg); z-index: 10; border: 1px solid #edf2f7; display: none;">
-                    <div style="padding: 12px; border-bottom: 1px solid #edf2f7; font-weight: bold;">Notifications</div>
-                    <div class="notification-list">
-                        <?php if($notifs->num_rows > 0): while($n = $notifs->fetch_assoc()): ?>
-                            <a href="actions.php?action=read_notif&notif_id=<?php echo $n['id']; ?>&link=<?php echo urlencode($n['link']); ?>" class="notification-item <?php echo $n['is_read'] ? '' : 'unread'; ?>" style="display: block; color: inherit;">
-                                <?php echo htmlspecialchars($n['message']); ?>
-                                <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 4px;"><?php echo date('M d, H:i', strtotime($n['created_at'])); ?></div>
-                            </a>
-                        <?php endwhile; else: ?>
-                            <div style="padding: 20px; text-align: center; color: var(--text-light);">No notifications</div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-
             <?php if ($role == 'tripmaker' || $role == 'admin'): ?>
                 <a href="create_trip.php" class="btn btn-primary">+ Create New Trip</a>
             <?php endif; ?>
         </div>
     </div>
-    
-    <script>
-        // Simple toggle for notification
-        document.querySelector('[onclick*="notif-box"]').onclick = function() {
-            var box = document.getElementById('notif-box');
-            box.style.display = box.style.display === 'block' ? 'none' : 'block';
-        }
-    </script>
 
 
     <!-- STUDENT VIEW -->
@@ -163,9 +130,6 @@ $notifs = $conn->query("SELECT * FROM notifications WHERE user_id=$user_id ORDER
     <!-- TRIPMAKER / ADMIN VIEW -->
     <?php if ($role == 'tripmaker' || $role == 'admin'): ?>
         
-        <!-- Pending Requests -->
-        <!-- Reuse existing request table, simplified for brevity here -->
-
         <!-- Managed Trips with Stats -->
         <h2 style="margin-bottom: 24px; font-size: 1.5rem; margin-top: 40px;">Managed Trips</h2>
         <div class="trip-grid">
