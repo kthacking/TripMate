@@ -77,6 +77,8 @@ if ($has_access && isset($_FILES['media_file'])) {
     }
 }
 
+// Media Deletion Handler moved to trip_gallery.php
+
 // Helpers
 $stars = str_repeat("★", $trip['comfort_level']) . str_repeat("☆", 5 - $trip['comfort_level']);
 ?>
@@ -254,54 +256,30 @@ $stars = str_repeat("★", $trip['comfort_level']) . str_repeat("☆", 5 - $trip
             <!-- MEDIA GALLERY (C) - Tabs -->
             <h2 id="media" style="margin-bottom: 16px; color: var(--secondary-color);">Shared Media</h2>
             
-            <div style="background: var(--white); padding: 30px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); margin-bottom: 40px;">
-                
-                <!-- Upload (Modified) -->
-                <form method="POST" enctype="multipart/form-data" style="margin-bottom: 30px; background: #f8fafc; padding: 15px; border-radius: var(--radius-md);">
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                        <input type="file" name="media_file" required style="flex-grow: 1;">
-                        <select name="media_type" class="form-select" style="width: 120px;">
-                            <option value="image">Photo</option>
-                            <option value="video">Video</option>
-                            <option value="document">Doc</option>
-                        </select>
-                        <button type="submit" class="btn btn-primary">Upload</button>
-                    </div>
-                </form>
-
-                <!-- Tabs -->
-                <div class="tabs">
-                    <button class="tab-btn active" onclick="filterMedia('all', this)">All</button>
-                    <button class="tab-btn" onclick="filterMedia('image', this)">Photos</button>
-                    <button class="tab-btn" onclick="filterMedia('video', this)">Videos</button>
-                    <button class="tab-btn" onclick="filterMedia('document', this)">Docs</button>
-                </div>
-
-                <div id="media-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px;">
+            <!-- MEDIA GALLERY LINK -->
+            <h2 id="media" style="margin-bottom: 16px; color: var(--secondary-color);">Shared Media</h2>
+            
+            <div style="background: var(--white); padding: 30px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); margin-bottom: 40px; text-align: center;">
+                <div style="display: flex; gap: 10px; margin-bottom: 24px; justify-content: center;">
                     <?php
-                    $m_sql = "SELECT * FROM media WHERE trip_id = $trip_id ORDER BY uploaded_at DESC";
-                    $m_result = $conn->query($m_sql);
-                    if ($m_result->num_rows > 0) {
-                        while($media = $m_result->fetch_assoc()) {
-                            $type_icon = ($media['type'] == 'video') ? 'ri-video-fill' : (($media['type'] == 'document') ? 'ri-file-text-fill' : '');
-                            
-                            echo '<a href="'.htmlspecialchars($media['file_path']).'" target="_blank" class="media-item" data-type="'.$media['type'].'" style="display:block; border-radius: 8px; overflow: hidden; height: 120px; position:relative; border: 1px solid #edf2f7;">';
-                            
-                            if ($media['type'] == 'image') {
-                                echo '<img src="'.htmlspecialchars($media['file_path']).'" style="width:100%; height:100%; object-fit:cover;">';
+                    $prev_sql = "SELECT file_path, type FROM media WHERE trip_id = $trip_id ORDER BY uploaded_at DESC LIMIT 3";
+                    $prev_res = $conn->query($prev_sql);
+                    if ($prev_res->num_rows > 0) {
+                        while($p = $prev_res->fetch_assoc()) {
+                            if($p['type'] == 'image') {
+                                echo '<img src="'.htmlspecialchars($p['file_path']).'" style="width: 100px; height: 100px; object-fit: cover; border-radius: 12px;">';
                             } else {
-                                echo '<div style="background:#f8fafc; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color: var(--secondary-color);">';
-                                echo '<i class="'.$type_icon.'" style="font-size:2rem; margin-bottom:5px;"></i>';
-                                echo '<span style="font-size:0.8rem;">'.ucfirst($media['type']).'</span>';
-                                echo '</div>';
+                                echo '<div style="width: 100px; height: 100px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-light);"><i class="ri-file-text-line"></i></div>';
                             }
-                            echo '</a>';
                         }
                     } else {
-                        echo '<p style="color: var(--text-light);">No media shared yet.</p>';
+                        echo '<div style="background: #f8fafc; width: 100%; padding: 40px; border-radius: 12px; color: var(--text-light);"><i class="ri-gallery-line" style="font-size: 2rem;"></i><br>No media yet</div>';
                     }
                     ?>
                 </div>
+                <h3 style="margin-bottom: 10px; font-size: 1.2rem;">Capture the Moments</h3>
+                <p style="color: var(--text-light); margin-bottom: 20px;">View, upload, and share photos and videos from this trip.</p>
+                <a href="trip_gallery.php?id=<?php echo $trip_id; ?>" class="btn btn-primary" style="padding: 12px 30px;">Open Gallery</a>
             </div>
 
             <!-- GROUP CHAT (Below media for flow) -->
@@ -399,17 +377,78 @@ $stars = str_repeat("★", $trip['comfort_level']) . str_repeat("☆", 5 - $trip
 
 <script>
     // Tab Filter Logic
+    // Media Interactions
     function filterMedia(type, btn) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        // Toggle Active Tab
+        btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         
-        document.querySelectorAll('.media-item').forEach(item => {
+        // Filter Items
+        document.querySelectorAll('.media-card').forEach(item => {
             if (type === 'all' || item.dataset.type === type) {
                 item.style.display = 'block';
             } else {
                 item.style.display = 'none';
+                // Uncheck hidden items
+                let cb = item.querySelector('input[type="checkbox"]');
+                if(cb) { cb.checked = false; }
+                item.classList.remove('selected');
             }
         });
+    }
+
+    function toggleSelect(card) {
+        // Find checkbox inside text
+        let checkbox = card.querySelector('input[type="checkbox"]');
+        
+        // Prevent recursive toggling if clicking the checkbox directly
+        if (event.target !== checkbox) {
+            checkbox.checked = !checkbox.checked;
+        }
+
+        if (checkbox.checked) {
+            card.classList.add('selected');
+        } else {
+            card.classList.remove('selected');
+        }
+    }
+
+    function getSelectedFiles() {
+        let files = [];
+        document.querySelectorAll('.media-checkbox:checked').forEach(cb => {
+            files.push(cb.dataset.file);
+        });
+        return files;
+    }
+
+    function viewSelected() {
+        let files = getSelectedFiles();
+        if (files.length === 0) return alert('Select a file to view.');
+        // Open first file (simple) or loop? Open first for now as per requirement interpretation
+        window.open(files[0], '_blank');
+    }
+
+    function downloadSelected() {
+        let files = getSelectedFiles();
+        if (files.length === 0) return alert('Select files to download.');
+        
+        files.forEach(file => {
+            let link = document.createElement('a');
+            link.href = file;
+            link.download = '';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    }
+
+    function deleteSelected() {
+        let count = document.querySelectorAll('.media-checkbox:checked').length;
+        if (count === 0) return alert('Select files to delete.');
+        
+        if (confirm(`Are you sure you want to delete ${count} file(s)? This cannot be undone.`)) {
+            document.getElementById('mediaGridForm').submit();
+        }
     }
 
     var chatBox = document.getElementById("chat-box");
