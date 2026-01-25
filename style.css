@@ -12,9 +12,9 @@
     --white: #FFFFFF;
     --glass-bg: rgba(255, 255, 255, 0.85);
     --glass-border: rgba(255, 255, 255, 0.2);
-    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
     --radius-lg: 20px;
     --radius-md: 12px;
     --radius-sm: 8px;
@@ -46,14 +46,29 @@ ul {
 
 /* Animations */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
 }
 
 .fade-in {
@@ -176,7 +191,7 @@ ul {
     align-items: center;
     padding-top: 80px;
     background: radial-gradient(circle at top right, #e8e6ff 0%, transparent 40%),
-                radial-gradient(circle at bottom left, #ffe6ee 0%, transparent 40%);
+        radial-gradient(circle at bottom left, #ffe6ee 0%, transparent 40%);
 }
 
 .hero-content {
@@ -217,8 +232,9 @@ ul {
 
 .hero-img-main {
     width: 100%;
-    border-radius: 40px; /* Highly rounded as per reference style */
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    border-radius: 40px;
+    /* Highly rounded as per reference style */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
     animation: float 6s ease-in-out infinite;
     object-fit: cover;
 }
@@ -460,9 +476,17 @@ ul {
 }
 
 /* Utilities */
-.text-center { text-align: center; }
-.mb-4 { margin-bottom: 1rem; }
-.mt-4 { margin-top: 1rem; }
+.text-center {
+    text-align: center;
+}
+
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.mt-4 {
+    margin-top: 1rem;
+}
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -470,7 +494,270 @@ ul {
         grid-template-columns: 1fr;
         text-align: center;
     }
-    .hero-text p { margin: 0 auto 40px; }
-    .hero-buttons { justify-content: center; }
-    .nav-links { display: none; } /* Mobile menu simplified for now */
+
+    .hero-text p {
+        margin: 0 auto 40px;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+
+    .nav-links {
+        display: none;
+    }
+
+    /* Mobile menu simplified for now */
+}
+
+/* Star Rating Component */
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 1.5rem;
+    color: #cbd5e0;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.star-rating input:checked~label,
+.star-rating label:hover,
+.star-rating label:hover~label {
+    color: #F6E05E;
+    /* Star Yellow */
+}
+
+/* Badge Styles for Trip Types */
+.badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-purple {
+    background: #E9D8FD;
+    color: #6B46C1;
+}
+
+/* Luxury */
+.badge-green {
+    background: #F0FFF4;
+    color: #2F855A;
+}
+
+/* Adventure */
+.badge-blue {
+    background: #EBF8FF;
+    color: #2C5282;
+}
+
+/* Educational */
+.badge-orange {
+    background: #FEEBC8;
+    color: #C05621;
+}
+
+/* Leisure */
+.badge-gray {
+    background: #EDF2F7;
+    color: #4A5568;
+}
+
+/* General */
+
+/* Notification List Styling */
+.notification-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f7fafc;
+    transition: background 0.2s;
+    font-size: 0.9rem;
+}
+
+.notification-item:hover {
+    background: #f8fafc;
+}
+
+.notification-item.unread {
+    background: #ebf8ff;
+    border-left: 3px solid var(--primary-color);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Navbar Notification Bell */
+.nav-icon-btn {
+    position: relative;
+    cursor: pointer;
+    margin-right: 20px;
+    color: var(--secondary-color);
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: var(--accent-color);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+}
+
+.notif-dropdown {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 360px;
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid #edf2f7;
+    z-index: 1100;
+    overflow: hidden;
+    transform-origin: top right;
+    animation: fadeIn 0.2s ease-out;
+    display: none;
+}
+
+.notif-dropdown.show {
+    display: block;
+}
+
+.notif-header {
+    padding: 16px;
+    border-bottom: 1px solid #edf2f7;
+    font-weight: 700;
+    color: var(--secondary-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notif-body {
+    max-height: 400px;
+    overflow-y: auto;
+    background: #fcfdfe;
+}
+
+/* Compact Request Card */
+.req-card-mini {
+    padding: 16px;
+    border-bottom: 1px solid #edf2f7;
+    transition: background 0.2s;
+}
+
+.req-card-mini:hover {
+    background: var(--white);
+}
+
+.req-info {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.mini-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #a0aec0, #718096);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.req-details {
+    overflow: hidden;
+    flex: 1;
+}
+
+.req-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    display: block;
+}
+
+.req-email {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.req-trip {
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.req-actions-mini {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-mini {
+    flex: 1;
+    padding: 6px;
+    font-size: 0.8rem;
+    border-radius: 20px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-mini-approve {
+    background: #48bb78;
+    color: white;
+    box-shadow: 0 2px 5px rgba(72, 187, 120, 0.3);
+}
+
+.btn-mini-approve:hover {
+    background: #38a169;
+}
+
+.btn-mini-reject {
+    border: 1px solid #fc8181;
+    color: #e53e3e;
+    background: white;
+}
+
+.btn-mini-reject:hover {
+    background: #fff5f5;
 }
