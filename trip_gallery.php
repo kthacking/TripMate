@@ -174,7 +174,6 @@ if (isset($_POST['delete_media']) && ($role == 'admin' || $role == 'tripmaker' |
                             // Actions Area
                             echo '<div class="masonry-actions">';
                                 echo '<a href="'.$file_url.'" download class="action-btn-mini" title="Download" onclick="event.stopPropagation()"><i class="ri-download-line"></i></a>';
-                                echo '<a href="'.$file_url.'" target="_blank" class="action-btn-mini" title="View" onclick="event.stopPropagation()"><i class="ri-eye-line"></i></a>';
                             echo '</div>';
                         echo '</div>'; // End Overlay
 
