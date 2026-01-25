@@ -19,6 +19,25 @@ $notifs = $conn->query("SELECT * FROM notifications WHERE user_id=$user_id ORDER
         <div>
             <h1 style="color: var(--secondary-color);">Dashboard</h1>
             <p style="color: var(--text-light);">Welcome back, <?php echo htmlspecialchars($_SESSION['name']); ?>.</p>
+            
+            <?php if(($_SESSION['role'] == 'tripmaker') && isset($conn)): 
+                $tm_id = $_SESSION['user_id'];
+                $avg_r = 0; $count_r = 0;
+                try {
+                    $tm_query = $conn->query("SELECT AVG(rating) as avg_r, COUNT(*) as c FROM reviews WHERE tripmaker_id=$tm_id");
+                    if ($tm_query) {
+                        $tm_stats = $tm_query->fetch_assoc();
+                        $avg_r = $tm_stats['avg_r'];
+                        $count_r = $tm_stats['c'];
+                    }
+                } catch (Exception $e) { }
+
+                if($count_r > 0):
+            ?>
+                <div style="display: inline-flex; align-items: center; gap: 8px; background: #FFFBEB; color: #744210; padding: 6px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; margin-top: 8px;">
+                    <i class="ri-star-fill" style="color: #F59E0B;"></i> <?php echo round($avg_r, 1); ?> / 5 (<?php echo $count_r; ?> reviews)
+                </div>
+            <?php endif; endif; ?>
         </div>
         
         <div style="display: flex; gap: 20px; align-items: center;">

@@ -50,6 +50,14 @@ if ($has_access && isset($_POST['send_message'])) {
     }
 }
 
+if ($has_access && isset($_POST['mark_completed'])) {
+    if ($role == 'admin' || $trip['created_by'] == $user_id) {
+        $conn->query("UPDATE trips SET status='completed' WHERE id=$trip_id");
+        header("Location: trip.php?id=$trip_id&msg=completed");
+        exit();
+    }
+}
+
 if ($has_access && isset($_FILES['media_file'])) {
     // ... (existing upload logic)
     $target_dir = "uploads/";
@@ -144,6 +152,103 @@ $stars = str_repeat("★", $trip['comfort_level']) . str_repeat("☆", 5 - $trip
         </div>
         <?php endif; ?>
 
+        <!-- REVIEW SECTION -->
+        <?php
+        // 1. Fetch Reviews Stats
+        $avg_rating = 0.0;
+        $total_reviews = 0;
+        try {
+            $r_check = $conn->query("SELECT AVG(rating) as avg_rating, COUNT(*) as total FROM reviews WHERE trip_id = $trip_id");
+            if ($r_check) {
+                $r_stats = $r_check->fetch_assoc();
+                $avg_rating = round($r_stats['avg_rating'], 1);
+                $total_reviews = $r_stats['total'];
+            }
+        } catch (Exception $e) { 
+            // Table might not exist yet
+        }
+
+        // 2. Handle Review Submission
+        $can_review = false;
+        if ($role == 'student' && $enrollment_status == 'approved' && $trip['status'] == 'completed') {
+            $has_reviewed = $conn->query("SELECT id FROM reviews WHERE trip_id=$trip_id AND student_id=$user_id")->num_rows > 0;
+            if (!$has_reviewed) {
+                $can_review = true;
+                if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_review'])) {
+                    $rating = intval($_POST['rating']);
+                    $review_text = $conn->real_escape_string($_POST['review_text']);
+                    $tm_id = $trip['created_by'];
+                    
+                    $stmt = $conn->prepare("INSERT INTO reviews (trip_id, student_id, tripmaker_id, rating, review_text) VALUES (?, ?, ?, ?, ?)");
+                    $stmt->bind_param("iiiis", $trip_id, $user_id, $tm_id, $rating, $review_text);
+                    if ($stmt->execute()) {
+                        echo "<script>window.location.href='trip.php?id=$trip_id&msg=reviewed';</script>";
+                        exit();
+                    }
+                }
+            }
+        }
+        ?>
+
+        <div style="background: var(--white); padding: 30px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); margin-bottom: 40px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 style="margin: 0; color: var(--secondary-color);">Reviews</h2>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.5rem; color: #F6E05E; font-weight: 700;">★ <?php echo $avg_rating ?: '0.0'; ?></span>
+                    <span style="color: var(--text-light);">(/5 based on <?php echo $total_reviews; ?> reviews)</span>
+                </div>
+            </div>
+
+            <!-- Review Form -->
+            <?php if($can_review): ?>
+                <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 24px; border: 1px solid #edf2f7;">
+                    <h4 style="margin-bottom: 12px; color: var(--secondary-color);">Write a Review</h4>
+                    <form method="POST">
+                        <div style="margin-bottom: 12px;">
+                            <label style="display: block; font-size: 0.9rem; margin-bottom: 4px; color: var(--text-light);">Rating</label>
+                            <div class="star-rating" style="justify-content: flex-end;"> 
+                                <!-- Reuse existing star rating css logic but left-aligned concept needed? Existing is row-reverse right-aligned. Let's stick to standard behavior or just use simple select for reliability if CSS is tricky. Actually, standard CSS from edit_trip works. -->
+                                <input type="radio" id="r5" name="rating" value="5" required/><label for="r5">★</label>
+                                <input type="radio" id="r4" name="rating" value="4" /><label for="r4">★</label>
+                                <input type="radio" id="r3" name="rating" value="3" /><label for="r3">★</label>
+                                <input type="radio" id="r2" name="rating" value="2" /><label for="r2">★</label>
+                                <input type="radio" id="r1" name="rating" value="1" /><label for="r1">★</label>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 12px;">
+                            <textarea name="review_text" class="form-control" rows="2" placeholder="Share your experience (optional)..."></textarea>
+                        </div>
+                        <button type="submit" name="submit_review" class="btn btn-primary" style="padding: 8px 24px;">Submit Review</button>
+                    </form>
+                </div>
+            <?php endif; ?>
+
+            <!-- Recent Reviews -->
+            <div class="reviews-list">
+                <?php
+                $rev_sql = "SELECT r.*, u.name FROM reviews r JOIN users u ON r.student_id = u.id WHERE r.trip_id = $trip_id ORDER BY r.created_at DESC LIMIT 5";
+                $revs = $conn->query($rev_sql);
+                if ($revs->num_rows > 0) {
+                    while($rev = $revs->fetch_assoc()) {
+                        $r_stars = str_repeat("★", $rev['rating']) . str_repeat("☆", 5 - $rev['rating']);
+                        echo '<div style="padding: 16px 0; border-bottom: 1px solid #edf2f7;">';
+                        echo '<div style="display: flex; justify-content: space-between; margin-bottom: 4px;">';
+                        echo '<strong style="color: var(--secondary-color);">'.htmlspecialchars($rev['name']).'</strong>';
+                        echo '<span style="color: #F6E05E; letter-spacing: 2px;">'.$r_stars.'</span>';
+                        echo '</div>';
+                        if (!empty($rev['review_text'])) {
+                            echo '<p style="color: var(--text-color); font-size: 0.95rem;">'.htmlspecialchars($rev['review_text']).'</p>';
+                        }
+                        echo '<small style="color: var(--text-light);">'.date('M d, Y', strtotime($rev['created_at'])).'</small>';
+                        echo '</div>';
+                    }
+                } else {
+                    echo '<p style="color: var(--text-light);">No reviews yet.</p>';
+                }
+                ?>
+            </div>
+        </div>
+
         <?php if ($has_access): ?>
             
             <!-- MEDIA GALLERY (C) - Tabs -->
@@ -232,12 +337,19 @@ $stars = str_repeat("★", $trip['comfort_level']) . str_repeat("☆", 5 - $trip
     <!-- RIGHT COLUMN -->
     <div>
          <!-- ... existing sidebar details ... -->
-         <div style="background: var(--white); padding: 30px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); position: sticky; top: 100px;">
+        <div style="background: var(--white); padding: 30px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); position: sticky; top: 100px;">
             <div style="text-align: center; margin-bottom: 24px;">
                 <span style="font-size: 0.9rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px;">Total Cost</span>
                 <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary-color);">$<?php echo number_format($trip['cost']); ?></div>
             </div>
             
+             <!-- Status Badge -->
+             <div style="text-align: center; margin-bottom: 20px;">
+                <span class="badge <?php echo ($trip['status'] == 'active') ? 'badge-green' : (($trip['status'] == 'completed') ? 'badge-purple' : 'badge-gray'); ?>" style="font-size: 1rem; padding: 6px 16px;">
+                    <?php echo ucfirst($trip['status']); ?>
+                </span>
+             </div>
+
             <!-- Join Button / Status Logic (Existing) -->
             <?php if (!$has_access): ?>
                  <?php if ($enrollment_status == 'pending'): ?>
@@ -254,22 +366,32 @@ $stars = str_repeat("★", $trip['comfort_level']) . str_repeat("☆", 5 - $trip
                              $curr = $conn->query("SELECT COUNT(*) as c FROM enrollments WHERE trip_id=$trip_id AND status='approved'")->fetch_assoc()['c'];
                              if($curr >= $trip['max_participants']) $can_join = false;
                         }
+                        if($trip['status'] != 'active') {
+                            $can_join = false;
+                        }
                     ?>
                     
                     <?php if($can_join): ?>
                         <a href="actions.php?action=join_trip&trip_id=<?php echo $trip_id; ?>" class="btn btn-primary" style="width: 100%;">Join This Trip</a>
                         <p style="font-size: 0.85rem; color: var(--text-light); text-align: center; margin-top: 10px;">Instant confirmation email sent</p>
                     <?php else: ?>
-                        <button class="btn btn-outline" style="width: 100%; color: #c53030; border-color: #c53030;" disabled>Unavailable / Full</button>
+                        <button class="btn btn-outline" style="width: 100%; color: #c53030; border-color: #c53030;" disabled>Unavailable / Closed</button>
                     <?php endif; ?>
                     
                 <?php else: ?>
                     <button class="btn btn-outline" style="width: 100%;" disabled>For Students</button>
                 <?php endif; ?>
             <?php else: ?>
-                <div style="text-align: center; color: #2f855a; background: #f0fff4; padding: 12px; border-radius: 8px; font-weight: 600;">
+                <div style="text-align: center; color: #2f855a; background: #f0fff4; padding: 12px; border-radius: 8px; font-weight: 600; margin-bottom: 16px;">
                     <i class="ri-checkbox-circle-fill"></i> You have access
                 </div>
+                
+                <!-- TripMaker Actions -->
+                <?php if(($role == 'admin' || $trip['created_by'] == $user_id) && $trip['status'] == 'active'): ?>
+                    <form method="POST" onsubmit="return confirm('Mark this trip as completed? This will allow students to leave reviews.');">
+                        <button type="submit" name="mark_completed" class="btn btn-primary" style="width: 100%; background: var(--secondary-color);">Mark as Completed</button>
+                    </form>
+                <?php endif; ?>
             <?php endif; ?>
          </div>
     </div>
