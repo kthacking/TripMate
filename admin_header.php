@@ -53,12 +53,10 @@ try {
     <script src="script.js" defer></script>
     <style>
         :root {
-            --admin-sidebar-width: 250px;
             --admin-primary: #6366F1;
             --admin-primary-dark: #4F46E5;
-            --admin-bg: #F1F5F9;
-            --admin-sidebar-bg: #0F172A;
-            --admin-sidebar-item-active: rgba(99, 102, 241, 0.15);
+            --admin-bg: #F8FAFC;
+            --admin-nav-bg: #0F172A;
             --admin-card-bg: #FFFFFF;
             --admin-text-main: #0F172A;
             --admin-text-muted: #64748B;
@@ -75,30 +73,28 @@ try {
             font-size: 14px;
             background-color: var(--admin-bg);
             margin: 0;
-            display: flex;
             color: var(--admin-text-main);
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Premium Sidebar */
-        .admin-sidebar {
-            width: var(--admin-sidebar-width);
-            height: 100vh;
-            background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
-            color: #F1F5F9;
+        /* Top Navigation Bar */
+        .admin-nav {
+            background: var(--admin-nav-bg);
+            height: 75px;
+            width: 100%;
             display: flex;
-            flex-direction: column;
-            position: fixed;
-            left: 0;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
             top: 0;
             z-index: 1001;
-            padding: 0;
-            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            box-sizing: border-box;
         }
 
         .admin-logo {
-            padding: 30px 25px;
-            font-size: 1.35rem;
+            font-size: 1.3rem;
             font-weight: 800;
             color: white;
             display: flex;
@@ -106,18 +102,18 @@ try {
             gap: 12px;
             text-decoration: none;
             letter-spacing: -0.6px;
+            flex-shrink: 0;
         }
 
         .admin-logo i {
             background: linear-gradient(135deg, #6366F1, #4F46E5);
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 12px;
-            font-size: 1.2rem;
-            box-shadow: 0 6px 12px rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            font-size: 1.1rem;
             color: white;
         }
 
@@ -128,47 +124,35 @@ try {
         }
 
         .admin-menu {
-            flex: 1;
-            padding: 0 22px;
+            display: flex;
             list-style: none;
-            overflow-y: auto;
             margin: 0;
-        }
-
-        .admin-menu::-webkit-scrollbar {
-            width: 4px;
-        }
-        .admin-menu::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-        }
-
-        .admin-menu-item {
-            margin-bottom: 8px; /* Reduced margin */
+            padding: 0;
+            gap: 8px;
+            align-items: center;
         }
 
         .admin-menu-link {
             display: flex;
             align-items: center;
-            padding: 11px 16px;
+            padding: 10px 18px;
             border-radius: 12px;
             color: #94A3B8;
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.92rem;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            gap: 12px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            gap: 10px;
+            white-space: nowrap;
         }
 
         .admin-menu-link i {
-            font-size: 1.3rem;
-            transition: transform 0.2s;
+            font-size: 1.2rem;
         }
 
         .admin-menu-link:hover {
             color: white;
             background: rgba(255, 255, 255, 0.05);
-            transform: translateX(4px);
         }
 
         .admin-menu-link.active {
@@ -176,84 +160,30 @@ try {
             color: white;
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
-        
-        .admin-menu-link.active i {
-            color: white;
-        }
 
-        /* Main Content Container */
-        .admin-main {
-            flex: 1;
-            margin-left: var(--admin-sidebar-width);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Sticky Header */
-        .admin-top-bar {
-            height: 70px;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--admin-border);
+        /* Top Bar Profile & Status */
+        .admin-nav-right {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .top-bar-left h2 {
-            font-size: 1.4rem; /* Reduced font size */
-            font-weight: 800;
-            color: var(--admin-text-main);
-            margin: 0;
-            letter-spacing: -0.8px;
-            display: flex;
-            align-items: center;
-            gap: 15px; /* Reduced gap */
-        }
-
-        .status-badge-live {
-            background: #EEF2FF;
-            color: #6366F1;
-            padding: 6px 14px; /* Reduced padding */
-            border-radius: 40px;
-            font-size: 0.7rem; /* Reduced font size */
-            font-weight: 800;
-            letter-spacing: 0.8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: 1px solid #E0E7FF;
-        }
-
-        .status-badge-live::before {
-            content: '';
-            width: 10px;
-            height: 10px;
-            background: #6366F1;
-            border-radius: 50%;
-            animation: pulse-live 2s infinite;
-        }
-
-        @keyframes pulse-live {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.6); }
-            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+            gap: 25px;
+            flex-shrink: 0;
         }
 
         .admin-profile {
             display: flex;
             align-items: center;
-            gap: 18px; /* Reduced gap */
-            padding: 6px 6px 6px 16px; /* Reduced padding */
-            background: white;
-            border-radius: 16px; /* Reduced radius */
-            border: 1px solid var(--admin-border);
-            box-shadow: var(--shadow-premium);
+            gap: 12px;
+            padding: 5px 5px 5px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .admin-profile:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .profile-info {
@@ -261,37 +191,44 @@ try {
         }
 
         .profile-name {
-            font-weight: 800;
-            color: var(--admin-text-main);
-            font-size: 0.9rem; /* Reduced font size */
+            font-weight: 700;
+            color: white;
+            font-size: 0.88rem;
             display: block;
         }
 
         .profile-role {
-            font-size: 0.7rem; /* Reduced font size */
-            color: var(--admin-text-muted);
-            margin-top: 1px;
+            font-size: 0.7rem;
+            color: #94A3B8;
             font-weight: 600;
         }
 
         .profile-avatar {
-            width: 38px; /* Reduced size */
-            height: 38px; /* Reduced size */
+            width: 32px;
+            height: 32px;
             background: linear-gradient(135deg, #6366F1, #4F46E5);
-            border-radius: 12px; /* Reduced radius */
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 800;
-            font-size: 1rem; /* Reduced font size */
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            font-size: 0.9rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Main Content Container */
+        .admin-main {
+            min-height: calc(100vh - 75px);
+            display: flex;
+            flex-direction: column;
         }
 
         .admin-content {
-            padding: 35px 40px; /* Reduced padding */
-            max-width: 1700px;
+            padding: 40px;
+            max-width: 1400px;
             width: 100%;
+            margin: 0 auto;
             box-sizing: border-box;
             animation: fadeIn 0.4s ease-out;
         }
@@ -306,10 +243,10 @@ try {
         .admin-card {
             background: var(--admin-card-bg);
             border-radius: 16px;
-            padding: 22px;
+            padding: 25px;
             border: 1px solid var(--admin-border);
             box-shadow: var(--shadow-premium);
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
         /* Stat Cards */
@@ -386,13 +323,13 @@ try {
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            padding: 22px 30px;
+            padding: 18px 25px;
             background: #F8FAFC;
         }
 
         .admin-table td {
-            padding: 24px 30px;
-            font-size: 0.95rem;
+            padding: 18px 25px;
+            font-size: 0.9rem;
             border-bottom: 1px solid #F1F5F9;
         }
 
@@ -408,16 +345,16 @@ try {
         .btn-premium {
             background: var(--admin-primary);
             color: white;
-            padding: 14px 28px;
-            border-radius: 14px;
+            padding: 10px 22px;
+            border-radius: 12px;
             font-weight: 700;
             border: none;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+            gap: 8px;
+            font-size: 0.9rem;
         }
 
         .btn-premium:hover {
@@ -429,94 +366,93 @@ try {
 </head>
 <body>
 
-<aside class="admin-sidebar">
+<nav class="admin-nav">
     <a href="admin_dashboard.php" class="admin-logo">
-        <i class="ri-shield-user-line"></i> Trip<span>Mate</span> Admin
+        <i class="ri-shield-user-fill"></i> Trip<span>Mate</span> Admin
     </a>
 
     <ul class="admin-menu">
-        <li class="admin-menu-item">
+        <li>
             <a href="admin_dashboard.php" class="admin-menu-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">
-                <i class="ri-dashboard-fill"></i> Dashboard
+                <i class="ri-dashboard-2-line"></i> Dashboard
             </a>
         </li>
-        <li class="admin-menu-item">
+        <li>
             <a href="admin_users.php" class="admin-menu-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_users.php' ? 'active' : ''; ?>">
-                <i class="ri-group-line"></i> Users Management
+                <i class="ri-user-settings-line"></i> Users
             </a>
         </li>
-        <li class="admin-menu-item">
+        <li>
             <a href="admin_trips.php" class="admin-menu-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_trips.php' ? 'active' : ''; ?>">
-                <i class="ri-plane-line"></i> Trips Control
+                <i class="ri-compass-3-line"></i> Trips
             </a>
         </li>
-        <li class="admin-menu-item">
+        <li>
             <a href="admin_requests.php" class="admin-menu-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_requests.php' ? 'active' : ''; ?>">
-                <i class="ri-user-add-line"></i> Global Requests
+                <i class="ri-mail-check-line"></i> Requests
             </a>
         </li>
-        <li class="admin-menu-item">
+        <li>
             <a href="admin_media.php" class="admin-menu-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_media.php' ? 'active' : ''; ?>">
-                <i class="ri-image-2-line"></i> Media Library
+                <i class="ri-gallery-line"></i> Media
             </a>
         </li>
-        <li class="admin-menu-item">
+        <li>
             <a href="admin_analytics.php" class="admin-menu-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_analytics.php' ? 'active' : ''; ?>">
-                <i class="ri-bar-chart-fill"></i> Analytics
+                <i class="ri-bar-chart-2-line"></i> Analytics
             </a>
         </li>
-        <li class="admin-menu-item" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
+        <li>
+            <a href="admin_logs.php" class="admin-menu-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_logs.php' ? 'active' : ''; ?>">
+                <i class="ri-history-line"></i> Logs
+            </a>
+        </li>
+        <li>
             <a href="admin_settings.php" class="admin-menu-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_settings.php' ? 'active' : ''; ?>">
                 <i class="ri-settings-4-line"></i> Settings
             </a>
         </li>
-        <li class="admin-menu-item">
-            <a href="admin_logs.php" class="admin-menu-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_logs.php' ? 'active' : ''; ?>">
-                <i class="ri-history-line"></i> Activity Logs
-            </a>
-        </li>
     </ul>
 
-    <div style="padding: 30px 20px; border-top: 1px solid rgba(255,255,255,0.05);">
-        <a href="dashboard.php" class="admin-menu-link" style="margin-bottom: 8px;">
-            <i class="ri-home-line"></i> Back to Site
+    <div class="admin-nav-right">
+        <a href="dashboard.php" style="color: #94A3B8; text-decoration: none; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+            <i class="ri-external-link-line"></i> View Site
         </a>
-        <a href="logout.php" class="admin-menu-link" style="color: #FDA4AF;">
-            <i class="ri-logout-circle-r-line"></i> Logout
-        </a>
-    </div>
-</aside>
-
-<div class="admin-main">
-    <header class="admin-top-bar">
-        <div class="top-bar-left">
-            <h2>
-                <?php 
-                $titles = [
-                    'admin_dashboard.php' => 'Dashboard Overview',
-                    'admin_users.php' => 'Users Management',
-                    'admin_trips.php' => 'Trip Control Center',
-                    'admin_requests.php' => 'Join Requests',
-                    'admin_media.php' => 'Media Library',
-                    'admin_analytics.php' => 'Analytics & Insights',
-                    'admin_settings.php' => 'System Settings',
-                    'admin_logs.php' => 'Activity Logs'
-                ];
-                echo $titles[basename($_SERVER['PHP_SELF'])] ?? 'Admin Panel';
-                ?>
-                <span class="status-badge-live">LIVE MONITORING</span>
-            </h2>
-        </div>
-        
-        <div class="admin-profile">
+        <div class="admin-profile" onclick="location.href='admin_settings.php'">
             <div class="profile-info">
                 <span class="profile-name"><?php echo htmlspecialchars($_SESSION['name']); ?></span>
-                <span class="profile-role">System Administrator</span>
+                <span class="profile-role">Master Administrator</span>
             </div>
             <div class="profile-avatar">
                 <?php echo strtoupper(substr($_SESSION['name'], 0, 1)); ?>
             </div>
         </div>
-    </header>
+        <a href="logout.php" style="color: #EF4444; font-size: 1.3rem; margin-left: 5px;" title="Secure Logout">
+            <i class="ri-logout-box-r-line"></i>
+        </a>
+    </div>
+</nav>
 
-    <main class="admin-content">
+<div class="admin-main">
+    <div class="admin-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h2 style="font-size: 1.4rem; font-weight: 850; color: var(--admin-text-main); margin: 0; letter-spacing: -0.8px; display: flex; align-items: center; gap: 12px;">
+                <?php 
+                    $titles = [
+                        'admin_dashboard.php' => 'Dashboard Overview',
+                        'admin_users.php' => 'User Directory',
+                        'admin_trips.php' => 'Trip Manifest',
+                        'admin_media.php' => 'Digital Assets Library',
+                        'admin_settings.php' => 'System Core Settings',
+                        'admin_requests.php' => 'Enrollment Requests',
+                        'admin_logs.php' => 'System Audit Trails',
+                        'admin_analytics.php' => 'Global Platform Analytics'
+                    ];
+                    echo $titles[basename($_SERVER['PHP_SELF'])] ?? 'Administration';
+                ?>
+                <span style="background: #EEF2FF; color: #6366F1; padding: 4px 12px; border-radius: 40px; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.5px; border: 1px solid #E0E7FF; display: flex; align-items: center; gap: 6px;">
+                    <span style="width: 8px; height: 8px; background: #6366F1; border-radius: 50%; display: inline-block;"></span>
+                    LIVE MONITORING
+                </span>
+            </h2>
+        </div>
