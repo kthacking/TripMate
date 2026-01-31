@@ -23,6 +23,9 @@ if (session_status() === PHP_SESSION_NONE) {
                 <li><a href="index.php" class="nav-link">Home</a></li>
                 <?php if(isset($_SESSION['user_id'])): ?>
                     <li><a href="dashboard.php" class="nav-link">Dashboard</a></li>
+                    <?php if($_SESSION['role'] == 'admin'): ?>
+                        <li><a href="admin_dashboard.php" class="nav-link" style="color: var(--primary-color); font-weight: 700;"><i class="ri-shield-user-fill"></i> Admin Center</a></li>
+                    <?php endif; ?>
                     <?php if($_SESSION['role'] == 'admin' || $_SESSION['role'] == 'tripmaker'): ?>
                         <li><a href="create_trip.php" class="nav-link">Create Trip</a></li>
                     <?php endif; ?>
