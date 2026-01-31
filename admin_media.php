@@ -55,73 +55,112 @@ while($ma = $m_all->fetch_assoc()) {
 $storage_mb = round($storage_bytes / 1048576, 2);
 ?>
 
-<div style="display: grid; grid-template-columns: 3fr 1fr; gap: 30px; margin-bottom: 30px; align-items: end;">
+<div style="display: grid; grid-template-columns: 1fr 300px; gap: 40px; margin-bottom: 50px; align-items: flex-end;">
     <div>
-        <h3 style="margin-bottom: 15px; color: #111827;">Global Media Library</h3>
-        <form method="GET" style="display: flex; gap: 10px;">
-            <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search trip or user..." class="form-control" style="border-radius: 10px; max-width: 300px;">
-            <select name="type" class="form-select" style="border-radius: 10px; width: 150px;">
-                <option value="">All Types</option>
+        <h3 style="font-size: 1.4rem; font-weight: 850; color: var(--admin-text-main); margin-bottom: 25px; letter-spacing: -0.8px;">Asset Management Library</h3>
+        <form method="GET" style="display: flex; gap: 15px; align-items: center;">
+            <div style="position: relative; flex: 1;">
+                <i class="ri-search-line" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94A3B8; font-size: 1.1rem;"></i>
+                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search by trip, user or filename..." class="form-control" style="padding-left: 48px; height: 50px; border-radius: 14px; border: 1px solid var(--admin-border); background: white; width: 100%; font-weight: 500;">
+            </div>
+            <select name="type" class="form-select" style="width: 160px; height: 50px; border-radius: 14px; border: 1px solid var(--admin-border); background: white; font-weight: 600; color: #475569;">
+                <option value="">All Formats</option>
                 <option value="image" <?php if($type_filter == 'image') echo 'selected'; ?>>Images</option>
                 <option value="video" <?php if($type_filter == 'video') echo 'selected'; ?>>Videos</option>
                 <option value="document" <?php if($type_filter == 'document') echo 'selected'; ?>>Documents</option>
             </select>
-            <button type="submit" class="btn btn-primary" style="border-radius: 10px;">Filter</button>
+            <button type="submit" class="btn-premium" style="height: 50px; padding: 0 25px;">
+                <i class="ri-equalizer-line"></i> Sync
+            </button>
         </form>
     </div>
     
-    <div style="background: white; padding: 20px; border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid #E5E7EB; text-align: center;">
-        <div style="font-size: 0.75rem; font-weight: 700; color: #6B7280; text-transform: uppercase; margin-bottom: 5px;">Storage Used</div>
-        <div style="font-size: 1.5rem; font-weight: 800; color: var(--admin-primary);"><?php echo $storage_mb; ?> MB</div>
+    <div style="background: linear-gradient(135deg, white 0%, #F8FAFC 100%); padding: 25px; border-radius: 20px; border: 1px solid var(--admin-border); display: flex; align-items: center; gap: 20px; box-shadow: var(--shadow-premium);">
+        <div style="width: 54px; height: 54px; background: #EEF2FF; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--admin-primary); font-size: 1.5rem;">
+            <i class="ri-database-2-line"></i>
+        </div>
+        <div>
+            <div style="font-size: 0.75rem; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Cloud Archive</div>
+            <div style="font-size: 1.4rem; font-weight: 850; color: var(--admin-text-main); line-height: 1;">
+                <?php echo $storage_mb; ?> <span style="font-size: 0.9rem; font-weight: 700; color: #94A3B8;">MB</span>
+            </div>
+        </div>
     </div>
 </div>
 
 <form method="POST">
-    <div id="bulkBar" class="bulk-actions" style="display: none; margin-bottom: 20px;">
-        <span id="selectedCount" style="margin-right: 20px; font-weight: 600;">0 items selected</span>
-        <button type="submit" name="bulk_delete" class="btn btn-mini btn-mini-reject" onclick="return confirm('Permanently delete selected files?')" style="background: #EF4444; color: white;">Delete Selected</button>
+    <div id="bulkBar" class="bulk-actions" style="display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 2000; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); padding: 15px 30px; border-radius: 18px; display: flex; align-items: center; background: var(--admin-sidebar-bg); border: 1px solid rgba(255,255,255,0.1);">
+        <span id="selectedCount" style="margin-right: 25px; font-weight: 700; color: white; display: flex; align-items: center; gap: 10px;">
+            <i class="ri-checkbox-circle-fill" style="color: #10B981;"></i>
+            <span id="countText">0 items selected</span>
+        </span>
+        <button type="submit" name="bulk_delete" class="btn-premium" onclick="return confirm('Security Check: Permanently purge selected cloud assets?')" style="background: #E11D48; padding: 10px 20px; font-size: 0.85rem;">
+            <i class="ri-delete-bin-line"></i> Wipe Selected
+        </button>
     </div>
 
-    <div style="background: white; border-radius: 16px; box-shadow: var(--shadow-sm); overflow: hidden;">
-        <table class="admin-table">
+    <div class="admin-card" style="padding: 0; overflow: hidden;">
+        <table class="admin-table" style="width: 100%;">
             <thead>
                 <tr>
-                    <th><input type="checkbox" onchange="toggleSelectAll(this)"></th>
-                    <th>Preview / File</th>
-                    <th>Type</th>
-                    <th>Trip Context</th>
-                    <th>Uploaded By</th>
-                    <th>Actions</th>
+                    <th style="width: 50px;"><input type="checkbox" onchange="toggleSelectAll(this)" style="width: 18px; height: 18px;"></th>
+                    <th>Asset Details</th>
+                    <th>Format</th>
+                    <th>Environment</th>
+                    <th>Contributor</th>
+                    <th style="text-align: right;">Operations</th>
                 </tr>
             </thead>
             <tbody>
                 <?php while($m = $media->fetch_assoc()): ?>
-                <tr>
-                    <td><input type="checkbox" name="selected_media[]" value="<?php echo $m['id']; ?>" class="admin-checkbox" onchange="updateBulkBar()"></td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <?php if($m['type'] == 'image'): ?>
-                                <img src="<?php echo htmlspecialchars($m['file_path']); ?>" style="width: 60px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #E5E7EB;">
-                            <?php else: ?>
-                                <div style="width: 60px; height: 45px; background: #F3F4F6; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #9CA3AF;">
-                                    <i class="<?php echo $m['type'] == 'video' ? 'ri-video-line' : 'ri-file-text-line'; ?>" style="font-size: 1.2rem;"></i>
+                <tr style="transition: background 0.2s;">
+                    <td><input type="checkbox" name="selected_media[]" value="<?php echo $m['id']; ?>" class="admin-checkbox" onchange="updateBulkBar()" style="width: 18px; height: 18px;"></td>
+                    <td style="padding: 24px 30px;">
+                        <div style="display: flex; align-items: center; gap: 18px;">
+                            <div style="position: relative;">
+                                <?php if($m['type'] == 'image'): ?>
+                                    <img src="<?php echo htmlspecialchars($m['file_path']); ?>" style="width: 70px; height: 50px; object-fit: cover; border-radius: 10px; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                                <?php else: ?>
+                                    <div style="width: 70px; height: 50px; background: #F8FAFC; border-radius: 10px; border: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: center; color: var(--admin-primary);">
+                                        <i class="<?php echo $m['type'] == 'video' ? 'ri-video-chat-line' : 'ri-file-3-line'; ?>" style="font-size: 1.5rem;"></i>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div style="overflow: hidden;">
+                                <div style="font-weight: 700; color: var(--admin-text-main); font-size: 0.95rem; white-space: nowrap; text-overflow: ellipsis; max-width: 250px;">
+                                    <?php echo basename($m['file_path']); ?>
                                 </div>
-                            <?php endif; ?>
-                            <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; font-size: 0.8rem; color: #6B7280;">
-                                <?php echo basename($m['file_path']); ?>
+                                <div style="font-size: 0.8rem; color: #94A3B8; font-weight: 500; margin-top: 2px;">
+                                    ID: #TRP-<?php echo $m['id']; ?>-ASSET
+                                </div>
                             </div>
                         </div>
                     </td>
-                    <td><span class="admin-badge" style="background: #F3F4F6; color: #374151;"><?php echo strtoupper($m['type']); ?></span></td>
-                    <td><span style="font-size: 0.85rem; font-weight: 600; color: #111827;"><?php echo htmlspecialchars($m['trip_title']); ?></span></td>
                     <td>
-                        <div style="font-size: 0.85rem; font-weight: 600;"><?php echo htmlspecialchars($m['uploader']); ?></div>
-                        <div style="font-size: 0.7rem; color: #9CA3AF;"><?php echo date('M d, Y', strtotime($m['uploaded_at'])); ?></div>
+                        <span class="admin-badge" style="background: #EEF2FF; color: #4338CA; border: 1px solid #E0E7FF;">
+                            <?php echo strtoupper($m['type']); ?>
+                        </span>
                     </td>
+                    <td><span style="font-size: 0.9rem; font-weight: 700; color: #475569;"><?php echo htmlspecialchars($m['trip_title']); ?></span></td>
                     <td>
-                        <div style="display: flex; gap: 8px;">
-                            <a href="<?php echo htmlspecialchars($m['file_path']); ?>" class="btn-icon" target="_blank" style="background: #F3F4F6; color: #374151;" title="Download"><i class="ri-download-line"></i></a>
-                            <a href="?action=delete_media&mid=<?php echo $m['id']; ?>" class="btn-icon danger" onclick="return confirm('Delete this file?')" style="background: #FEE2E2; color: #EF4444;" title="Delete"><i class="ri-delete-bin-line"></i></a>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 32px; height: 32px; background: #F1F5F9; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; color: #64748B;">
+                                 <?php echo strtoupper(substr($m['uploader'], 0, 1)); ?>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.9rem; font-weight: 700; color: #475569;"><?php echo htmlspecialchars($m['uploader']); ?></div>
+                                <div style="font-size: 0.75rem; color: #94A3B8; font-weight: 600;"><?php echo date('d M, Y', strtotime($m['uploaded_at'])); ?></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="padding-right: 30px;">
+                        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                            <a href="<?php echo htmlspecialchars($m['file_path']); ?>" class="btn-icon" target="_blank" style="background: white; border: 1px solid #E2E8F0; color: #475569; width: 38px; height: 38px;" title="Stream / Download">
+                                <i class="ri-external-link-line" style="font-size: 1.1rem;"></i>
+                            </a>
+                            <a href="?action=delete_media&mid=<?php echo $m['id']; ?>" class="btn-icon" onclick="return confirm('Definitive deletion of cloud asset?')" style="background: #FFF1F2; border: 1px solid #FECDD3; color: #E11D48; width: 38px; height: 38px;" title="Purge Asset">
+                                <i class="ri-delete-bin-2-line" style="font-size: 1.1rem;"></i>
+                            </a>
                         </div>
                     </td>
                 </tr>

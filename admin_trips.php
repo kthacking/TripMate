@@ -29,44 +29,64 @@ if (isset($_GET['action'])) {
 $trips = $conn->query("SELECT t.*, u.name as organizer FROM trips t JOIN users u ON t.created_by = u.id ORDER BY t.created_at DESC");
 ?>
 
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-    <h3 style="color: #111827;">All Platform Trips</h3>
-    <a href="create_trip.php" class="btn btn-primary" style="border-radius: 10px;"><i class="ri-add-line"></i> Create New Trip</a>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+    <h3 style="font-size: 1.4rem; font-weight: 850; color: var(--admin-text-main); letter-spacing: -0.8px;">Platform Trip Master List</h3>
+    <a href="create_trip.php" class="btn-premium">
+        <i class="ri-add-circle-line"></i> Launch New Expedition
+    </a>
 </div>
 
-<div style="background: white; border-radius: 16px; box-shadow: var(--shadow-sm); overflow: hidden;">
-    <table class="admin-table">
+<div class="admin-card" style="padding: 0; overflow: hidden;">
+    <table class="admin-table" style="width: 100%;">
         <thead>
             <tr>
-                <th>Trip Details</th>
-                <th>Organizer</th>
-                <th>Cost</th>
+                <th>Trip Particulars</th>
+                <th>Lead Organizer</th>
+                <th>Investment</th>
                 <th>Status</th>
-                <th>Participants</th>
-                <th>Actions</th>
+                <th>Manifest</th>
+                <th style="text-align: right;">Operations</th>
             </tr>
         </thead>
         <tbody>
             <?php while($t = $trips->fetch_assoc()): ?>
-            <tr>
-                <td>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <img src="<?php echo htmlspecialchars($t['image_url']); ?>" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover;">
+            <tr style="transition: background 0.2s;">
+                <td style="padding: 24px 30px;">
+                    <div style="display: flex; align-items: center; gap: 18px;">
+                        <div style="position: relative;">
+                            <img src="<?php echo htmlspecialchars($t['image_url']); ?>" style="width: 60px; height: 60px; border-radius: 14px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid white;">
+                            <div style="position: absolute; bottom: -5px; right: -5px; width: 22px; height: 22px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                                <i class="ri-earth-line" style="font-size: 0.75rem; color: var(--admin-primary);"></i>
+                            </div>
+                        </div>
                         <div>
-                            <div style="font-weight: 700; color: #111827;"><?php echo htmlspecialchars($t['title']); ?></div>
-                            <div style="font-size: 0.8rem; color: #6B7280;"><i class="ri-map-pin-line"></i> <?php echo htmlspecialchars($t['destination']); ?></div>
+                            <div style="font-weight: 800; color: var(--admin-text-main); font-size: 1.05rem; letter-spacing: -0.3px;"><?php echo htmlspecialchars($t['title']); ?></div>
+                            <div style="font-size: 0.85rem; color: var(--admin-text-muted); font-weight: 600; margin-top: 2px;">
+                                <i class="ri-map-pin-2-fill" style="color: #6366F1; font-size: 0.9rem;"></i> <?php echo htmlspecialchars($t['destination']); ?>
+                            </div>
                         </div>
                     </div>
                 </td>
-                <td><span style="font-size: 0.9rem; font-weight: 600;"><?php echo htmlspecialchars($t['organizer']); ?></span></td>
-                <td><span style="font-weight: 700; color: var(--admin-primary);">$<?php echo number_format($t['cost']); ?></span></td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 32px; height: 32px; background: #EEF2FF; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; color: var(--admin-primary);">
+                             <?php echo strtoupper(substr($t['organizer'], 0, 1)); ?>
+                        </div>
+                        <span style="font-size: 0.95rem; font-weight: 700; color: #475569;"><?php echo htmlspecialchars($t['organizer']); ?></span>
+                    </div>
+                </td>
+                <td><span style="font-weight: 850; color: var(--admin-primary); font-size: 1.1rem; letter-spacing: -0.5px;">$<?php echo number_format($t['cost']); ?></span></td>
                 <td>
                     <?php 
-                        $colors = ['active' => ['#D1FAE5', '#065F46'], 'completed' => ['#EEF2FF', '#4338CA'], 'cancelled' => ['#FEE2E2', '#991B1B']];
-                        $c = $colors[$t['status']] ?? ['#F3F4F6', '#374151'];
+                        $colors = [
+                            'active' => ['#DCFCE7', '#166534', 'ri-flashlight-line'], 
+                            'completed' => ['#F0FDF4', '#15803D', 'ri-checkbox-circle-line'], 
+                            'cancelled' => ['#FEF2F2', '#991B1B', 'ri-close-circle-line']
+                        ];
+                        $c = $colors[$t['status']] ?? ['#F8FAFC', '#475569', 'ri-question-line'];
                     ?>
-                    <span class="admin-badge" style="background: <?php echo $c[0]; ?>; color: <?php echo $c[1]; ?>;">
-                        <?php echo strtoupper($t['status']); ?>
+                    <span class="admin-badge" style="background: <?php echo $c[0]; ?>; color: <?php echo $c[1]; ?>; border: 1px solid rgba(0,0,0,0.05); display: inline-flex; align-items: center; gap: 5px;">
+                        <i class="<?php echo $c[2]; ?>"></i> <?php echo strtoupper($t['status']); ?>
                     </span>
                 </td>
                 <td>
@@ -74,23 +94,34 @@ $trips = $conn->query("SELECT t.*, u.name as organizer FROM trips t JOIN users u
                         $tid = $t['id'];
                         $p_count = $conn->query("SELECT COUNT(*) as c FROM enrollments WHERE trip_id = $tid AND status = 'approved'")->fetch_assoc()['c'];
                         $max = $t['max_participants'] ?: '∞';
+                        $perc = is_numeric($max) ? ($p_count / $max) * 100 : 0;
                     ?>
-                    <span style="font-size: 0.85rem; font-weight: 600;"><?php echo $p_count; ?> / <?php echo $max; ?></span>
+                    <div style="width: 100px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; color: #64748B; margin-bottom: 5px;">
+                            <span><?php echo $p_count; ?> / <?php echo $max; ?></span>
+                        </div>
+                        <div style="height: 6px; background: #F1F5F9; border-radius: 10px; overflow: hidden;">
+                            <div style="width: <?php echo $perc; ?>%; height: 100%; background: var(--admin-primary); border-radius: 10px;"></div>
+                        </div>
+                    </div>
                 </td>
-                <td>
-                    <div style="display: flex; gap: 8px;">
-                        <a href="trip.php?id=<?php echo $t['id']; ?>" class="btn-icon" title="View" target="_blank" style="background: #F3F4F6; color: #374151;"><i class="ri-eye-line"></i></a>
-                        <a href="edit_trip.php?id=<?php echo $t['id']; ?>" class="btn-icon" title="Edit" style="background: #F3F4F6; color: #374151;"><i class="ri-edit-line"></i></a>
-                        <a href="?action=clone&tid=<?php echo $t['id']; ?>" class="btn-icon" title="Clone" style="background: #F3F4F6; color: #374151;"><i class="ri-file-copy-line"></i></a>
+                <td style="padding-right: 30px;">
+                    <div style="display: flex; gap: 6px; justify-content: flex-end;">
+                        <a href="trip.php?id=<?php echo $t['id']; ?>" class="btn-icon" title="Preview Live Site" target="_blank" style="background: white; color: #475569; border: 1px solid #E2E8F0;"><i class="ri-eye-line"></i></a>
+                        <a href="edit_trip.php?id=<?php echo $t['id']; ?>" class="btn-icon" title="Edit Content" style="background: white; color: #475569; border: 1px solid #E2E8F0;"><i class="ri-edit-2-line"></i></a>
                         
                         <div class="dropdown" style="position: relative;">
-                            <button class="btn-icon" style="background: #F3F4F6; color: #374151; border: none; cursor: pointer;" onclick="this.nextElementSibling.classList.toggle('show')"><i class="ri-more-2-fill"></i></button>
-                            <div class="dropdown-menu" style="display: none; position: absolute; right: 0; background: white; box-shadow: var(--shadow-lg); border-radius: 8px; z-index: 100; min-width: 150px;">
-                                <a href="?action=toggle_status&tid=<?php echo $t['id']; ?>&status=active" class="dropdown-item" style="display: block; padding: 10px; font-size: 0.8rem; text-decoration: none; color: #333;">Mark Active</a>
-                                <a href="?action=toggle_status&tid=<?php echo $t['id']; ?>&status=completed" class="dropdown-item" style="display: block; padding: 10px; font-size: 0.8rem; text-decoration: none; color: #333;">Mark Completed</a>
-                                <a href="?action=toggle_status&tid=<?php echo $t['id']; ?>&status=cancelled" class="dropdown-item" style="display: block; padding: 10px; font-size: 0.8rem; text-decoration: none; color: #333;">Cancel Trip</a>
-                                <hr style="margin: 5px 0; border: 0; border-top: 1px solid #EEE;">
-                                <a href="?action=delete&tid=<?php echo $t['id']; ?>" class="dropdown-item" style="display: block; padding: 10px; font-size: 0.8rem; text-decoration: none; color: #EF4444;" onclick="return confirm('Delete this trip definitively?')">Delete Trip</a>
+                            <button class="btn-icon" style="background: white; color: #475569; border: 1px solid #E2E8F0; cursor: pointer;" onclick="this.nextElementSibling.classList.toggle('show')"><i class="ri-more-fill"></i></button>
+                            <div class="dropdown-menu" style="display: none; position: absolute; right: 0; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; z-index: 100; min-width: 180px; padding: 8px; border: 1px solid #E2E8F0; top: 100%; margin-top: 5px;">
+                                <a href="?action=clone&tid=<?php echo $t['id']; ?>" class="dropdown-item" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; font-size: 0.85rem; text-decoration: none; color: #475569; font-weight: 600; border-radius: 8px;">
+                                    <i class="ri-file-copy-2-line"></i> Duplicate Trip
+                                </a>
+                                <div style="height: 1px; background: #F1F5F9; margin: 5px 0;"></div>
+                                <a href="?action=toggle_status&tid=<?php echo $t['id']; ?>&status=active" class="dropdown-item" style="display: block; padding: 10px 12px; font-size: 0.85rem; text-decoration: none; color: #475569; font-weight: 600; border-radius: 8px;">Mark as Active</a>
+                                <a href="?action=toggle_status&tid=<?php echo $t['id']; ?>&status=completed" class="dropdown-item" style="display: block; padding: 10px 12px; font-size: 0.85rem; text-decoration: none; color: #475569; font-weight: 600; border-radius: 8px;">Mark as Completed</a>
+                                <a href="?action=toggle_status&tid=<?php echo $t['id']; ?>&status=cancelled" class="dropdown-item" style="display: block; padding: 10px 12px; font-size: 0.85rem; text-decoration: none; color: #E11D48; font-weight: 600; border-radius: 8px;">Cancel Operation</a>
+                                <div style="height: 1px; background: #F1F5F9; margin: 5px 0;"></div>
+                                <a href="?action=delete&tid=<?php echo $t['id']; ?>" class="dropdown-item" style="display: block; padding: 10px 12px; font-size: 0.85rem; text-decoration: none; color: #E11D48; font-weight: 600; border-radius: 8px;" onclick="return confirm('Definitive deletion? This cannot be undone.')">Delete Trip</a>
                             </div>
                         </div>
                     </div>

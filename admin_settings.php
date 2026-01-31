@@ -19,34 +19,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['save_settings'])) {
 $s = $settings;
 ?>
 
-<div style="max-width: 800px;">
-    <h3 style="margin-bottom: 30px; color: #111827;">Global Platform Configurations</h3>
+<div style="max-width: 900px; animation: slideIn 0.4s ease-out;">
+    <div style="margin-bottom: 40px;">
+        <h3 style="font-size: 1.5rem; font-weight: 850; color: var(--admin-text-main); letter-spacing: -0.8px; margin-bottom: 10px;">System Configuration Core</h3>
+        <p style="color: var(--admin-text-muted); font-weight: 500;">Manage global environment variables and platform-wide feature permissions.</p>
+    </div>
 
     <form method="POST">
         <input type="hidden" name="save_settings" value="1">
 
-        <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div style="display: flex; flex-direction: column; gap: 30px;">
             
             <!-- General Settings -->
-            <div style="background: white; border-radius: 16px; padding: 25px; box-shadow: var(--shadow-sm); border: 1px solid #E5E7EB;">
-                <h4 style="font-size: 1rem; color: #4338CA; border-bottom: 1px solid #F3F4F6; padding-bottom: 15px; margin-bottom: 20px;">General System</h4>
-                
-                <div class="form-group" style="margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <div style="font-weight: 700; color: #111827;">Platform Title</div>
-                        <div style="font-size: 0.8rem; color: #6B7280;">Displayed in browser and header</div>
-                    </div>
-                    <input type="text" name="s[site_title]" value="<?php echo htmlspecialchars($s['site_title']); ?>" class="form-control" style="width: 250px; border-radius: 10px;">
-                </div>
-
-                <div class="form-group" style="margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <div style="font-weight: 700; color: #111827;">Maintenance Mode</div>
-                        <div style="font-size: 0.8rem; color: #6B7280;">Disable public access (Coming soon)</div>
-                    </div>
-                    <label class="switch">
-                        <input type="hidden" name="s[maintenance_mode]" value="0">
-                        <input type="checkbox" name="s[maintenance_mode]" value="1" <?php if($s['maintenance_mode'] == '1') echo 'checked'; ?>>
                         <span class="slider"></span>
                     </label>
                 </div>

@@ -34,79 +34,89 @@ if ($role_filter) $where .= " AND role = '$role_filter'";
 $users = $conn->query("SELECT * FROM users WHERE $where ORDER BY created_at DESC");
 ?>
 
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-    <div style="display: flex; gap: 15px;">
-        <form method="GET" style="display: flex; gap: 10px;">
-            <div style="position: relative;">
-                <i class="ri-search-line" style="position: absolute; left: 12px; top: 11px; color: #9CA3AF;"></i>
-                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search users..." class="form-control" style="padding-left: 35px; width: 300px; border-radius: 10px;">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; gap: 20px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 300px;">
+        <form method="GET" style="display: flex; gap: 15px; align-items: center;">
+            <div style="position: relative; flex: 1;">
+                <i class="ri-search-2-line" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94A3B8; font-size: 1.1rem;"></i>
+                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search by name or email..." class="form-control" style="padding-left: 48px; height: 50px; border-radius: 14px; border: 1px solid var(--admin-border); background: white; width: 100%; font-weight: 500;">
             </div>
-            <select name="role" class="form-select" style="width: 150px; border-radius: 10px;" onchange="this.form.submit()">
+            <select name="role" class="form-select" style="width: 180px; height: 50px; border-radius: 14px; border: 1px solid var(--admin-border); background: white; font-weight: 600; color: #475569;" onchange="this.form.submit()">
                 <option value="">All Roles</option>
                 <option value="admin" <?php if($role_filter == 'admin') echo 'selected'; ?>>Admin</option>
                 <option value="tripmaker" <?php if($role_filter == 'tripmaker') echo 'selected'; ?>>TripMaker</option>
                 <option value="student" <?php if($role_filter == 'student') echo 'selected'; ?>>Student</option>
             </select>
-            <button type="submit" class="btn btn-primary" style="border-radius: 10px;">Filter</button>
+            <button type="submit" class="btn-premium" style="height: 50px; padding: 0 25px;">
+                <i class="ri-filter-3-line"></i> Filter
+            </button>
         </form>
     </div>
-    <a href="admin_reg.php" class="btn btn-outline" style="border-radius: 10px;"><i class="ri-user-add-line"></i> New Admin</a>
+    <a href="admin_reg.php" class="btn-premium" style="background: white; color: var(--admin-primary); border: 2px solid var(--admin-primary); box-shadow: none;">
+        <i class="ri-user-add-line"></i> Create Admin Account
+    </a>
 </div>
 
-<div style="background: white; border-radius: 16px; box-shadow: var(--shadow-sm); overflow: hidden;">
-    <table class="admin-table">
+<div class="admin-card" style="padding: 0; overflow: hidden;">
+    <table class="admin-table" style="width: 100%;">
         <thead>
             <tr>
-                <th><input type="checkbox" onchange="toggleSelectAll(this)"></th>
-                <th>User</th>
-                <th>Role</th>
+                <th style="width: 50px;"><input type="checkbox" onchange="toggleSelectAll(this)" style="width: 18px; height: 18px;"></th>
+                <th>Users Details</th>
+                <th>Account Role</th>
                 <th>Status</th>
-                <th>Joined</th>
-                <th>Actions</th>
+                <th>Joined Date</th>
+                <th style="text-align: right;">Actions</th>
             </tr>
         </thead>
         <tbody>
             <?php while($u = $users->fetch_assoc()): ?>
-            <tr>
-                <td><input type="checkbox" class="admin-checkbox" onchange="updateBulkBar()"></td>
+            <tr style="transition: background 0.2s;">
+                <td><input type="checkbox" class="admin-checkbox" onchange="updateBulkBar()" style="width: 18px; height: 18px;"></td>
                 <td>
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="width: 40px; height: 40px; border-radius: 10px; background: #EEF2FF; color: #4338CA; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 44px; height: 44px; border-radius: 12px; background: #F1F5F9; color: var(--admin-primary); display: flex; align-items: center; justify-content: center; font-weight: 800; border: 1px solid #E2E8F0;">
                             <?php echo strtoupper(substr($u['name'], 0, 1)); ?>
                         </div>
                         <div>
-                            <div style="font-weight: 700; color: #111827;"><?php echo htmlspecialchars($u['name']); ?></div>
-                            <div style="font-size: 0.8rem; color: #6B7280;"><?php echo htmlspecialchars($u['email']); ?></div>
+                            <div style="font-weight: 800; color: var(--admin-text-main); font-size: 1rem;"><?php echo htmlspecialchars($u['name']); ?></div>
+                            <div style="font-size: 0.85rem; color: var(--admin-text-muted); font-weight: 500;"><?php echo htmlspecialchars($u['email']); ?></div>
                         </div>
                     </div>
                 </td>
                 <td>
                     <div class="dropdown" style="position: relative;">
-                        <button class="admin-badge" style="background: #E0E7FF; color: #4338CA; border: none; cursor: pointer;" onclick="this.nextElementSibling.classList.toggle('show')">
+                        <button class="admin-badge" style="background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="this.nextElementSibling.classList.toggle('show')">
                             <?php echo strtoupper($u['role']); ?> <i class="ri-arrow-down-s-line"></i>
                         </button>
-                        <div class="dropdown-menu" style="display: none; position: absolute; background: white; box-shadow: var(--shadow-lg); border-radius: 8px; z-index: 100; min-width: 120px;">
-                            <a href="?action=change_role&uid=<?php echo $u['id']; ?>&role=admin" class="dropdown-item" style="display: block; padding: 10px; font-size: 0.8rem; text-decoration: none; color: #333;">Admin</a>
-                            <a href="?action=change_role&uid=<?php echo $u['id']; ?>&role=tripmaker" class="dropdown-item" style="display: block; padding: 10px; font-size: 0.8rem; text-decoration: none; color: #333;">TripMaker</a>
-                            <a href="?action=change_role&uid=<?php echo $u['id']; ?>&role=student" class="dropdown-item" style="display: block; padding: 10px; font-size: 0.8rem; text-decoration: none; color: #333;">Student</a>
+                        <div class="dropdown-menu" style="display: none; position: absolute; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; z-index: 100; min-width: 150px; padding: 8px; border: 1px solid #E2E8F0; left: 0; top: 100%; margin-top: 5px;">
+                            <a href="?action=change_role&uid=<?php echo $u['id']; ?>&role=admin" class="dropdown-item" style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; font-size: 0.85rem; text-decoration: none; color: #475569; font-weight: 600; border-radius: 8px;">
+                                <i class="ri-shield-user-line"></i> Admin
+                            </a>
+                            <a href="?action=change_role&uid=<?php echo $u['id']; ?>&role=tripmaker" class="dropdown-item" style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; font-size: 0.85rem; text-decoration: none; color: #475569; font-weight: 600; border-radius: 8px;">
+                                <i class="ri-briefcase-line"></i> TripMaker
+                            </a>
+                            <a href="?action=change_role&uid=<?php echo $u['id']; ?>&role=student" class="dropdown-item" style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; font-size: 0.85rem; text-decoration: none; color: #475569; font-weight: 600; border-radius: 8px;">
+                                <i class="ri-graduation-cap-line"></i> Student
+                            </a>
                         </div>
                     </div>
                 </td>
                 <td>
                     <?php if($u['is_active']): ?>
-                        <span class="admin-badge" style="background: #D1FAE5; color: #065F46;">Active</span>
+                        <span class="admin-badge" style="background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0;">Active</span>
                     <?php else: ?>
-                        <span class="admin-badge" style="background: #FEE2E2; color: #991B1B;">Suspended</span>
+                        <span class="admin-badge" style="background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA;">Suspended</span>
                     <?php endif; ?>
                 </td>
-                <td><span style="font-size: 0.85rem; color: #6B7280;"><?php echo date('M d, Y', strtotime($u['created_at'])); ?></span></td>
+                <td><span style="font-size: 0.9rem; color: #64748B; font-weight: 600;"><?php echo date('M d, Y', strtotime($u['created_at'])); ?></span></td>
                 <td>
-                    <div style="display: flex; gap: 8px;">
-                        <a href="?action=toggle_status&uid=<?php echo $u['id']; ?>" class="btn-icon" title="<?php echo $u['is_active'] ? 'Suspend' : 'Activate'; ?>" style="background: #F3F4F6; color: #374151;">
-                            <i class="<?php echo $u['is_active'] ? 'ri-user-forbid-line' : 'ri-user-received-line'; ?>"></i>
+                    <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                        <a href="?action=toggle_status&uid=<?php echo $u['id']; ?>" class="btn-icon" title="<?php echo $u['is_active'] ? 'Suspend User' : 'Restore User'; ?>" style="background: #F8FAFC; color: #475569; border: 1px solid #E2E8F0; width: 38px; height: 38px;">
+                            <i class="<?php echo $u['is_active'] ? 'ri-user-forbid-line' : 'ri-user-follow-line'; ?>" style="font-size: 1.1rem;"></i>
                         </a>
-                        <a href="?action=delete&uid=<?php echo $u['id']; ?>" class="btn-icon danger" onclick="return confirm('Permanently delete this user?')" style="background: #FEE2E2; color: #EF4444;">
-                            <i class="ri-delete-bin-line"></i>
+                        <a href="?action=delete&uid=<?php echo $u['id']; ?>" class="btn-icon" onclick="return confirm('Danger: Table records for this user will be purged. Proceed?')" style="background: #FFF1F2; color: #E11D48; border: 1px solid #FECDD3; width: 38px; height: 38px;">
+                            <i class="ri-delete-bin-6-line" style="font-size: 1.1rem;"></i>
                         </a>
                     </div>
                 </td>
