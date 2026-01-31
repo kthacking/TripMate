@@ -53,7 +53,7 @@ try {
     <script src="script.js" defer></script>
     <style>
         :root {
-            --admin-sidebar-width: 290px;
+            --admin-sidebar-width: 250px;
             --admin-primary: #6366F1;
             --admin-primary-dark: #4F46E5;
             --admin-bg: #F1F5F9;
@@ -63,15 +63,16 @@ try {
             --admin-text-main: #0F172A;
             --admin-text-muted: #64748B;
             --admin-border: #E2E8F0;
-            --radius-2xl: 24px;
-            --radius-xl: 18px;
-            --radius-lg: 12px;
-            --shadow-premium: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-            --shadow-active: 0 20px 25px -5px rgba(99, 102, 241, 0.15), 0 10px 10px -5px rgba(99, 102, 241, 0.05);
+            --radius-2xl: 20px;
+            --radius-xl: 16px;
+            --radius-lg: 10px;
+            --shadow-premium: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-active: 0 10px 15px -3px rgba(99, 102, 241, 0.12), 0 4px 6px -2px rgba(99, 102, 241, 0.05);
         }
 
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-size: 14px;
             background-color: var(--admin-bg);
             margin: 0;
             display: flex;
@@ -96,27 +97,27 @@ try {
         }
 
         .admin-logo {
-            padding: 45px 35px;
-            font-size: 1.6rem;
+            padding: 30px 25px;
+            font-size: 1.35rem;
             font-weight: 800;
             color: white;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             text-decoration: none;
-            letter-spacing: -0.8px;
+            letter-spacing: -0.6px;
         }
 
         .admin-logo i {
             background: linear-gradient(135deg, #6366F1, #4F46E5);
-            width: 44px;
-            height: 44px;
+            width: 38px;
+            height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 14px;
-            font-size: 1.4rem;
-            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            font-size: 1.2rem;
+            box-shadow: 0 6px 12px rgba(99, 102, 241, 0.3);
             color: white;
         }
 
@@ -143,42 +144,37 @@ try {
         }
 
         .admin-menu-item {
-            margin-bottom: 10px;
+            margin-bottom: 8px; /* Reduced margin */
         }
 
         .admin-menu-link {
             display: flex;
             align-items: center;
-            gap: 16px;
-            padding: 16px 20px;
-            border-radius: 16px;
+            padding: 11px 16px;
+            border-radius: 12px;
             color: #94A3B8;
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            font-size: 0.92rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            gap: 12px;
         }
 
-        .admin-menu-link i { 
+        .admin-menu-link i {
             font-size: 1.3rem;
-            transition: all 0.3s;
+            transition: transform 0.2s;
         }
 
         .admin-menu-link:hover {
             color: white;
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        .admin-menu-link:hover i {
-            transform: scale(1.1);
-            color: var(--admin-primary);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(4px);
         }
 
         .admin-menu-link.active {
             background: var(--admin-primary);
             color: white;
-            box-shadow: var(--shadow-active);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
         
         .admin-menu-link.active i {
@@ -196,36 +192,36 @@ try {
 
         /* Sticky Header */
         .admin-top-bar {
-            height: 100px;
+            height: 70px;
             background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--admin-border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 60px;
+            padding: 0 30px;
             position: sticky;
             top: 0;
             z-index: 1000;
-            border-bottom: 1px solid var(--admin-border);
         }
 
         .top-bar-left h2 {
-            font-size: 1.6rem;
+            font-size: 1.4rem; /* Reduced font size */
             font-weight: 800;
             color: var(--admin-text-main);
             margin: 0;
             letter-spacing: -0.8px;
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 15px; /* Reduced gap */
         }
 
         .status-badge-live {
             background: #EEF2FF;
             color: #6366F1;
-            padding: 8px 18px;
+            padding: 6px 14px; /* Reduced padding */
             border-radius: 40px;
-            font-size: 0.75rem;
+            font-size: 0.7rem; /* Reduced font size */
             font-weight: 800;
             letter-spacing: 0.8px;
             display: flex;
@@ -252,10 +248,10 @@ try {
         .admin-profile {
             display: flex;
             align-items: center;
-            gap: 22px;
-            padding: 8px 8px 8px 20px;
+            gap: 18px; /* Reduced gap */
+            padding: 6px 6px 6px 16px; /* Reduced padding */
             background: white;
-            border-radius: 20px;
+            border-radius: 16px; /* Reduced radius */
             border: 1px solid var(--admin-border);
             box-shadow: var(--shadow-premium);
         }
@@ -267,33 +263,33 @@ try {
         .profile-name {
             font-weight: 800;
             color: var(--admin-text-main);
-            font-size: 0.95rem;
+            font-size: 0.9rem; /* Reduced font size */
             display: block;
         }
 
         .profile-role {
-            font-size: 0.75rem;
+            font-size: 0.7rem; /* Reduced font size */
             color: var(--admin-text-muted);
             margin-top: 1px;
             font-weight: 600;
         }
 
         .profile-avatar {
-            width: 44px;
-            height: 44px;
+            width: 38px; /* Reduced size */
+            height: 38px; /* Reduced size */
             background: linear-gradient(135deg, #6366F1, #4F46E5);
-            border-radius: 15px;
+            border-radius: 12px; /* Reduced radius */
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 800;
-            font-size: 1.2rem;
+            font-size: 1rem; /* Reduced font size */
             box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
         }
 
         .admin-content {
-            padding: 50px 60px;
+            padding: 35px 40px; /* Reduced padding */
             max-width: 1700px;
             width: 100%;
             box-sizing: border-box;
@@ -306,24 +302,26 @@ try {
         }
 
         /* Global UI Elements */
+        /* Main Card System */
         .admin-card {
-            background: white;
-            border-radius: var(--radius-2xl);
-            padding: 35px;
+            background: var(--admin-card-bg);
+            border-radius: 16px;
+            padding: 22px;
+            border: 1px solid var(--admin-border);
             box-shadow: var(--shadow-premium);
-            border: 1px solid rgba(226, 232, 240, 0.6);
+            margin-bottom: 25px;
         }
 
+        /* Stat Cards */
         .stat-card {
             background: white;
-            padding: 32px;
-            border-radius: var(--radius-2xl);
-            box-shadow: var(--shadow-premium);
+            padding: 22px;
+            border-radius: 16px;
+            border: 1px solid var(--admin-border);
             display: flex;
-            flex-direction: column;
-            gap: 24px;
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
         }
 
         .stat-card:hover { 
@@ -339,30 +337,31 @@ try {
         }
 
         .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             box-shadow: inset 0 -4px 0 rgba(0,0,0,0.05);
         }
 
         .stat-label {
-            font-size: 0.95rem;
-            font-weight: 700;
+            font-size: 0.82rem;
             color: var(--admin-text-muted);
-            letter-spacing: -0.2px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat-value {
-            font-size: 2.8rem;
-            font-weight: 850;
+            font-size: 1.6rem;
+            font-weight: 800;
             color: var(--admin-text-main);
-            margin: 0;
-            letter-spacing: -1.5px;
-            line-height: 1;
+            line-height: 1.2;
+            margin: 0; /* Ensure margin is reset if needed */
+            letter-spacing: -1.5px; /* Keep original letter spacing */
         }
 
         .stat-footer {

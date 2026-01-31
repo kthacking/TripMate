@@ -29,9 +29,9 @@ if (isset($_GET['action'])) {
 $trips = $conn->query("SELECT t.*, u.name as organizer FROM trips t JOIN users u ON t.created_by = u.id ORDER BY t.created_at DESC");
 ?>
 
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-    <h3 style="font-size: 1.4rem; font-weight: 850; color: var(--admin-text-main); letter-spacing: -0.8px;">Platform Trip Master List</h3>
-    <a href="create_trip.php" class="btn-premium">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+    <h3 style="font-size: 1.25rem; font-weight: 850; color: var(--admin-text-main); letter-spacing: -0.6px;">Platform Trip Master List</h3>
+    <a href="create_trip.php" class="btn-premium" style="padding: 10px 18px; font-size: 0.85rem;">
         <i class="ri-add-circle-line"></i> Launch New Expedition
     </a>
 </div>
@@ -51,31 +51,31 @@ $trips = $conn->query("SELECT t.*, u.name as organizer FROM trips t JOIN users u
         <tbody>
             <?php while($t = $trips->fetch_assoc()): ?>
             <tr style="transition: background 0.2s;">
-                <td style="padding: 24px 30px;">
-                    <div style="display: flex; align-items: center; gap: 18px;">
+                <td style="padding: 15px 20px;">
+                    <div style="display: flex; align-items: center; gap: 14px;">
                         <div style="position: relative;">
-                            <img src="<?php echo htmlspecialchars($t['image_url']); ?>" style="width: 60px; height: 60px; border-radius: 14px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid white;">
-                            <div style="position: absolute; bottom: -5px; right: -5px; width: 22px; height: 22px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-                                <i class="ri-earth-line" style="font-size: 0.75rem; color: var(--admin-primary);"></i>
+                            <img src="<?php echo htmlspecialchars($t['image_url']); ?>" style="width: 50px; height: 50px; border-radius: 12px; object-fit: cover; box-shadow: 0 3px 8px rgba(0,0,0,0.08); border: 2px solid white;">
+                            <div style="position: absolute; bottom: -4px; right: -4px; width: 20px; height: 20px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                <i class="ri-earth-line" style="font-size: 0.7rem; color: var(--admin-primary);"></i>
                             </div>
                         </div>
                         <div>
-                            <div style="font-weight: 800; color: var(--admin-text-main); font-size: 1.05rem; letter-spacing: -0.3px;"><?php echo htmlspecialchars($t['title']); ?></div>
-                            <div style="font-size: 0.85rem; color: var(--admin-text-muted); font-weight: 600; margin-top: 2px;">
-                                <i class="ri-map-pin-2-fill" style="color: #6366F1; font-size: 0.9rem;"></i> <?php echo htmlspecialchars($t['destination']); ?>
+                            <div style="font-weight: 800; color: var(--admin-text-main); font-size: 0.95rem; letter-spacing: -0.2px;"><?php echo htmlspecialchars($t['title']); ?></div>
+                            <div style="font-size: 0.8rem; color: var(--admin-text-muted); font-weight: 600; margin-top: 1px;">
+                                <i class="ri-map-pin-2-fill" style="color: #6366F1; font-size: 0.85rem;"></i> <?php echo htmlspecialchars($t['destination']); ?>
                             </div>
                         </div>
                     </div>
                 </td>
                 <td>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <div style="width: 32px; height: 32px; background: #EEF2FF; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; color: var(--admin-primary);">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 28px; height: 28px; background: #EEF2FF; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem; color: var(--admin-primary);">
                              <?php echo strtoupper(substr($t['organizer'], 0, 1)); ?>
                         </div>
-                        <span style="font-size: 0.95rem; font-weight: 700; color: #475569;"><?php echo htmlspecialchars($t['organizer']); ?></span>
+                        <span style="font-size: 0.9rem; font-weight: 700; color: #475569;"><?php echo htmlspecialchars($t['organizer']); ?></span>
                     </div>
                 </td>
-                <td><span style="font-weight: 850; color: var(--admin-primary); font-size: 1.1rem; letter-spacing: -0.5px;">$<?php echo number_format($t['cost']); ?></span></td>
+                <td><span style="font-weight: 850; color: var(--admin-primary); font-size: 1rem; letter-spacing: -0.4px;">$<?php echo number_format($t['cost']); ?></span></td>
                 <td>
                     <?php 
                         $colors = [

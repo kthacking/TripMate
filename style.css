@@ -15,9 +15,9 @@
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-    --radius-lg: 20px;
-    --radius-md: 12px;
-    --radius-sm: 8px;
+    --radius-lg: 16px;
+    --radius-md: 10px;
+    --radius-sm: 6px;
     --transition: all 0.3s ease;
 }
 
@@ -77,13 +77,13 @@ ul {
 
 /* Layout Utilities */
 .container {
-    max-width: 1280px;
+    max-width: 1140px;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 0 20px;
 }
 
 .section {
-    padding: 80px 0;
+    padding: 60px 0;
 }
 
 /* Header / Navbar */
@@ -96,7 +96,7 @@ ul {
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--glass-border);
-    padding: 1rem 0;
+    padding: 0.7rem 0;
     transition: var(--transition);
 }
 
@@ -107,7 +107,7 @@ ul {
 }
 
 .logo {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: var(--primary-color);
     display: flex;
@@ -153,13 +153,14 @@ ul {
 
 .btn {
     display: inline-block;
-    padding: 12px 28px;
+    padding: 10px 24px;
     border-radius: var(--radius-lg);
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
     border: none;
     outline: none;
+    font-size: 0.95rem;
 }
 
 .btn-primary {
@@ -202,10 +203,11 @@ ul {
 }
 
 .hero-text h1 {
-    font-size: 4rem;
-    line-height: 1.1;
-    margin-bottom: 24px;
+    font-size: 2.8rem;
+    line-height: 1.2;
+    margin-bottom: 20px;
     color: var(--secondary-color);
+    letter-spacing: -1px;
 }
 
 .hero-text h1 span {
@@ -214,9 +216,9 @@ ul {
 }
 
 .hero-text p {
-    font-size: 1.2rem;
+    font-size: 1.05rem;
     color: var(--text-light);
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     max-width: 480px;
 }
 

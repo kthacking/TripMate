@@ -154,4 +154,4 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
     </nav>
     <!-- Content padding for fixed navbar -->
-    <div style="height: 80px;"></div>
+    <div style="height: 65px;"></div>

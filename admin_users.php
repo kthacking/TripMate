@@ -34,26 +34,26 @@ if ($role_filter) $where .= " AND role = '$role_filter'";
 $users = $conn->query("SELECT * FROM users WHERE $where ORDER BY created_at DESC");
 ?>
 
-<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; gap: 20px; flex-wrap: wrap;">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; gap: 15px; flex-wrap: wrap;">
     <div style="flex: 1; min-width: 300px;">
-        <form method="GET" style="display: flex; gap: 15px; align-items: center;">
+        <form method="GET" style="display: flex; gap: 12px; align-items: center;">
             <div style="position: relative; flex: 1;">
-                <i class="ri-search-2-line" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94A3B8; font-size: 1.1rem;"></i>
-                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search by name or email..." class="form-control" style="padding-left: 48px; height: 50px; border-radius: 14px; border: 1px solid var(--admin-border); background: white; width: 100%; font-weight: 500;">
+                <i class="ri-search-2-line" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94A3B8; font-size: 1rem;"></i>
+                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search by name or email..." class="form-control" style="padding-left: 40px; height: 42px; border-radius: 12px; border: 1px solid var(--admin-border); background: white; width: 100%; font-weight: 500; font-size: 0.9rem;">
             </div>
-            <select name="role" class="form-select" style="width: 180px; height: 50px; border-radius: 14px; border: 1px solid var(--admin-border); background: white; font-weight: 600; color: #475569;" onchange="this.form.submit()">
+            <select name="role" class="form-select" style="width: 150px; height: 42px; border-radius: 12px; border: 1px solid var(--admin-border); background: white; font-weight: 600; color: #475569; font-size: 0.85rem;" onchange="this.form.submit()">
                 <option value="">All Roles</option>
                 <option value="admin" <?php if($role_filter == 'admin') echo 'selected'; ?>>Admin</option>
                 <option value="tripmaker" <?php if($role_filter == 'tripmaker') echo 'selected'; ?>>TripMaker</option>
                 <option value="student" <?php if($role_filter == 'student') echo 'selected'; ?>>Student</option>
             </select>
-            <button type="submit" class="btn-premium" style="height: 50px; padding: 0 25px;">
+            <button type="submit" class="btn-premium" style="height: 42px; padding: 0 20px; font-size: 0.85rem;">
                 <i class="ri-filter-3-line"></i> Filter
             </button>
         </form>
     </div>
-    <a href="admin_reg.php" class="btn-premium" style="background: white; color: var(--admin-primary); border: 2px solid var(--admin-primary); box-shadow: none;">
-        <i class="ri-user-add-line"></i> Create Admin Account
+    <a href="admin_reg.php" class="btn-premium" style="background: white; color: var(--admin-primary); border: 2px solid var(--admin-primary); box-shadow: none; height: 42px; padding: 0 20px; font-size: 0.85rem;">
+        <i class="ri-user-add-line"></i> New Admin
     </a>
 </div>
 
@@ -74,13 +74,13 @@ $users = $conn->query("SELECT * FROM users WHERE $where ORDER BY created_at DESC
             <tr style="transition: background 0.2s;">
                 <td><input type="checkbox" class="admin-checkbox" onchange="updateBulkBar()" style="width: 18px; height: 18px;"></td>
                 <td>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <div style="width: 44px; height: 44px; border-radius: 12px; background: #F1F5F9; color: var(--admin-primary); display: flex; align-items: center; justify-content: center; font-weight: 800; border: 1px solid #E2E8F0;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 36px; height: 36px; border-radius: 10px; background: #F1F5F9; color: var(--admin-primary); display: flex; align-items: center; justify-content: center; font-weight: 800; border: 1px solid #E2E8F0; font-size: 0.85rem;">
                             <?php echo strtoupper(substr($u['name'], 0, 1)); ?>
                         </div>
                         <div>
-                            <div style="font-weight: 800; color: var(--admin-text-main); font-size: 1rem;"><?php echo htmlspecialchars($u['name']); ?></div>
-                            <div style="font-size: 0.85rem; color: var(--admin-text-muted); font-weight: 500;"><?php echo htmlspecialchars($u['email']); ?></div>
+                            <div style="font-weight: 800; color: var(--admin-text-main); font-size: 0.92rem;"><?php echo htmlspecialchars($u['name']); ?></div>
+                            <div style="font-size: 0.78rem; color: var(--admin-text-muted); font-weight: 500;"><?php echo htmlspecialchars($u['email']); ?></div>
                         </div>
                     </div>
                 </td>
