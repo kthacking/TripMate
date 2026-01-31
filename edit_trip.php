@@ -1,7 +1,9 @@
 <?php
 require_once 'db.php';
 require_once 'auth.php';
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 checkTripMaker(); 
 
 // AUTO-FIX: Ensure schema columns exist to prevent crash

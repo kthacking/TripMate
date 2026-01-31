@@ -1,7 +1,9 @@
 <?php
 require_once 'db.php';
 require_once 'auth.php';
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 checkTripMaker(); 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -20,17 +22,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $comfort_level = intval($_POST['comfort_level']);
     $included_items = $conn->real_escape_string($_POST['included_items']);
     $not_included_items = $conn->real_escape_string($_POST['not_included_items']);
+    $timeline = $conn->real_escape_string($_POST['timeline']);
+    $checklist = $conn->real_escape_string($_POST['checklist']);
     
     $created_by = $_SESSION['user_id'];
 
     $stmt = $conn->prepare("INSERT INTO trips (
         title, destination, image_url, start_date, end_date, cost, description, created_by,
-        max_participants, registration_deadline, trip_type, comfort_level, included_items, not_included_items
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        max_participants, registration_deadline, trip_type, comfort_level, included_items, not_included_items,
+        timeline, checklist
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
-    $stmt->bind_param("sssssdsiississ", 
+    $stmt->bind_param("sssssdsiississss", 
         $title, $destination, $image_url, $start_date, $end_date, $cost, $description, $created_by,
-        $max_participants, $registration_deadline, $trip_type, $comfort_level, $included_items, $not_included_items
+        $max_participants, $registration_deadline, $trip_type, $comfort_level, $included_items, $not_included_items,
+        $timeline, $checklist
     );
     
     if ($stmt->execute()) {
@@ -47,6 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div style="max-width: 900px; margin: 0 auto;">
         <h1 style="margin-bottom: 24px;">Create New Trip</h1>
         
+        <?php if(isset($error)) echo "<div class='alert alert-danger' style='color:red; margin-bottom:20px;'>$error</div>"; ?>
+
         <div class="auth-card" style="max-width: 100%; text-align: left;">
             <form method="POST" action="">
                 
@@ -125,7 +133,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 
                 <div class="form-group">
                     <label class="form-label">Description & Itinerary</label>
-                    <textarea name="description" class="form-control" rows="5" required placeholder="Describe the itinerary and highlights..."></textarea>
+                    <textarea name="description" class="form-control" rows="5" required placeholder="Describe the highlights..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Detailed Timeline (One event per line)</label>
+                    <textarea name="timeline" class="form-control" rows="5" placeholder="Day 1: Arrival...&#10;Day 2: Exploration..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Essential Checklist (One item per line)</label>
+                    <textarea name="checklist" class="form-control" rows="5" placeholder="Passport&#10;Hiking Boots&#10;Sunscreen"></textarea>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
@@ -149,3 +167,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 <?php include 'footer.php'; ?>
+
