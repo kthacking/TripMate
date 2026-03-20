@@ -214,46 +214,131 @@ $total_media = $conn->query("SELECT COUNT(*) as c FROM media")->fetch_assoc()['c
     .card-logs { background: #FFE4E6; } .card-logs::before { background: #FB7185; } .card-logs span { color: #E11D48; }
     .card-settings { background: #ECFEFF; } .card-settings::before { background: #22D3EE; } .card-settings span { color: #0891B2; }
 
-    /* Compact Stats */
+    /* Compact Stats Redesign */
     .compact-stats {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
+        gap: 24px;
+        margin-bottom: 40px;
     }
 
     .mini-stat {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        padding: 20px;
         border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.5);
+        padding: 24px;
+        color: white;
         display: flex;
-        flex-direction: column;
-        gap: 5px;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
     }
 
-    .mini-stat label {
+    .mini-stat:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-content {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .stat-visual {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .stat-visual i {
+        font-size: 1.4rem;
+        z-index: 1;
+        opacity: 0.9;
+    }
+
+    .stat-circular-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+    }
+
+    .stat-circular-bg circle {
+        fill: none;
+        stroke: rgba(255, 255, 255, 0.2);
+        stroke-width: 3.5;
+    }
+
+    .stat-circular-progress {
+        fill: none;
+        stroke: white;
+        stroke-width: 3.5;
+        stroke-linecap: round;
+        stroke-dasharray: 100;
+        transition: stroke-dashoffset 1.5s ease-out;
+    }
+
+    .stat-text label {
+        display: block;
         font-size: 0.75rem;
         font-weight: 700;
-        color: #94A3B8;
+        opacity: 0.8;
+        margin-bottom: 2px;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
     }
 
-    .mini-stat .value {
-        font-size: 1.4rem;
-        font-weight: 850;
+    .stat-text .value {
+        font-size: 1.8rem;
+        font-weight: 900;
+        letter-spacing: -1px;
+        line-height: 1.2;
+    }
+
+    .stat-text .trend {
+        font-size: 0.7rem;
+        font-weight: 700;
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        opacity: 0.85;
+    }
+
+    .stat-action {
+        width: 38px;
+        height: 38px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .mini-stat:hover .stat-action {
+        background: white;
         color: #1E293B;
     }
 
-    @media (max-width: 1024px) {
-        .nav-grid { grid-template-columns: repeat(2, 1fr); }
-    }
+    /* Gradient Variants */
+    .stat-users { background: linear-gradient(135deg, #6366F1, #8B5CF6); }
+    .stat-trips { background: linear-gradient(135deg, #0EA5E9, #3B82F6); }
+    .stat-requests { background: linear-gradient(135deg, #10B981, #059669); }
+    .stat-media { background: linear-gradient(135deg, #F59E0B, #EA580C); }
 
-    @media (max-width: 768px) {
-        .nav-grid { grid-template-columns: 1fr; }
-        .welcome-section { flex-direction: column; align-items: flex-start; gap: 20px; }
-        .welcome-text h1 { font-size: 2.2rem; }
+    @media (max-width: 1200px) {
         .compact-stats { grid-template-columns: repeat(2, 1fr); }
     }
 
@@ -271,6 +356,7 @@ $total_media = $conn->query("SELECT COUNT(*) as c FROM media")->fetch_assoc()['c
 <div class="geo-bg"></div>
 
 <div class="dashboard-container">
+    
     <div class="welcome-section">
         <div class="welcome-text">
             <h1>Command Center</h1>
@@ -279,6 +365,84 @@ $total_media = $conn->query("SELECT COUNT(*) as c FROM media")->fetch_assoc()['c
         <a href="logout.php" class="logout-box-btn">
             <i class="ri-logout-box-r-line"></i> Secure Logout
         </a>
+    </div>
+    <!-- Compact Stats Grid -->
+    <div class="compact-stats">
+        <!-- Users Card -->
+        <div class="mini-stat stat-users">
+            <div class="stat-content">
+                <div class="stat-visual">
+                    <svg class="stat-circular-bg" viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" r="16"></circle>
+                        <circle class="stat-circular-progress" cx="18" cy="18" r="16" style="stroke-dashoffset: 35;"></circle>
+                    </svg>
+                    <i class="ri-group-line"></i>
+                </div>
+                <div class="stat-text">
+                    <label>Platform Users</label>
+                    <div class="value"><?php echo $total_users; ?></div>
+                    <div class="trend"><i class="ri-arrow-right-up-line"></i> +12% growth</div>
+                </div>
+            </div>
+            <div class="stat-action"><i class="ri-user-add-line"></i></div>
+        </div>
+
+        <!-- Expeditions Card -->
+        <div class="mini-stat stat-trips">
+            <div class="stat-content">
+                <div class="stat-visual">
+                    <svg class="stat-circular-bg" viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" r="16"></circle>
+                        <circle class="stat-circular-progress" cx="18" cy="18" r="16" style="stroke-dashoffset: 15;"></circle>
+                    </svg>
+                    <i class="ri-earth-line"></i>
+                </div>
+                <div class="stat-text">
+                    <label>Active Trips</label>
+                    <div class="value"><?php echo $active_trips; ?></div>
+                    <div class="trend"><i class="ri-increase-decrease-line"></i> Live Now</div>
+                </div>
+            </div>
+            <div class="stat-action"><i class="ri-road-map-line"></i></div>
+        </div>
+
+        <!-- Pending Card -->
+        <div class="mini-stat stat-requests">
+            <div class="stat-content">
+                <div class="stat-visual">
+                    <svg class="stat-circular-bg" viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" r="16"></circle>
+                        <circle class="stat-circular-progress" cx="18" cy="18" r="16" style="stroke-dashoffset: 55;"></circle>
+                    </svg>
+                    <i class="ri-mail-star-line"></i>
+                </div>
+                <div class="stat-text">
+                    <label>Pending Reviews</label>
+                    <div class="value"><?php echo $pending_reqs; ?></div>
+                    <div class="trend"><i class="ri-time-line"></i> Urgent Action</div>
+                </div>
+            </div>
+            <div class="stat-action"><i class="ri-checkbox-multiple-line"></i></div>
+        </div>
+
+        <!-- Media Card -->
+        <div class="mini-stat stat-media">
+            <div class="stat-content">
+                <div class="stat-visual">
+                    <svg class="stat-circular-bg" viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" r="16"></circle>
+                        <circle class="stat-circular-progress" cx="18" cy="18" r="16" style="stroke-dashoffset: 25;"></circle>
+                    </svg>
+                    <i class="ri-image-line"></i>
+                </div>
+                <div class="stat-text">
+                    <label>Media Assets</label>
+                    <div class="value"><?php echo $total_media; ?></div>
+                    <div class="trend"><i class="ri-cloud-line"></i> Synced</div>
+                </div>
+            </div>
+            <div class="stat-action"><i class="ri-gallery-upload-line"></i></div>
+        </div>
     </div>
 
     <div class="nav-grid">
@@ -306,17 +470,7 @@ $total_media = $conn->query("SELECT COUNT(*) as c FROM media")->fetch_assoc()['c
             <div class="card-action">View Manifest <i class="ri-arrow-right-line"></i></div>
         </a>
 
-        <!-- Requests -->
-        <a href="admin_requests.php" class="nav-card card-requests">
-            <div>
-                <span class="card-badge"><?php echo $pending_reqs; ?> Pending</span>
-                <div class="card-content">
-                    <h3>Requests</h3>
-                    <p>Review and approve trip enrollment applications from students and participants.</p>
-                </div>
-            </div>
-            <div class="card-action">Open Inbox <i class="ri-arrow-right-line"></i></div>
-        </a>
+      
 
         <!-- Media -->
         <a href="admin_media.php" class="nav-card card-media">
@@ -353,7 +507,17 @@ $total_media = $conn->query("SELECT COUNT(*) as c FROM media")->fetch_assoc()['c
             </div>
             <div class="card-action">Monitor <i class="ri-arrow-right-line"></i></div>
         </a>
-
+      <!-- Requests -->
+        <a href="admin_requests.php" class="nav-card card-requests">
+            <div>
+                <span class="card-badge"><?php echo $pending_reqs; ?> Pending</span>
+                <div class="card-content">
+                    <h3>Requests</h3>
+                    <p>Review and approve trip enrollment applications from students and participants.</p>
+                </div>
+            </div>
+            <div class="card-action">Open Inbox <i class="ri-arrow-right-line"></i></div>
+        </a>
         <!-- Settings -->
         <a href="admin_settings.php" class="nav-card card-settings">
             <div>
@@ -368,24 +532,7 @@ $total_media = $conn->query("SELECT COUNT(*) as c FROM media")->fetch_assoc()['c
     </div>
 
     <!-- Stats row at bottom for continuity -->
-    <div class="compact-stats">
-        <div class="mini-stat">
-            <label>Platform Users</label>
-            <div class="value"><?php echo $total_users; ?></div>
-        </div>
-        <div class="mini-stat">
-            <label>Active Expeditions</label>
-            <div class="value"><?php echo $active_trips; ?></div>
-        </div>
-        <div class="mini-stat">
-            <label>Pending Reviews</label>
-            <div class="value"><?php echo $pending_reqs; ?></div>
-        </div>
-        <div class="mini-stat">
-            <label>Media Assets</label>
-            <div class="value"><?php echo $total_media; ?></div>
-        </div>
-    </div>
+    
 </div>
 
 <?php 

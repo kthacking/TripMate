@@ -56,296 +56,154 @@ $requests = $conn->query("SELECT e.*, u.name as student_name, u.email as student
     }
 
     body {
-        background-color: #F8FAFC;
-        color: #0F172A;
+        background-color: #F8F9FA;
+        position: relative;
+        overflow-x: hidden;
     }
 
-    .dashboard-container {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 60px 20px;
+    /* Geometric Background */
+    .geo-bg {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden;
+        background: radial-gradient(circle at 10% 20%, rgba(243, 232, 255, 0.5) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(220, 252, 231, 0.5) 0%, transparent 40%),
+                    radial-gradient(circle at 50% 50%, rgba(255, 237, 213, 0.4) 0%, transparent 60%);
     }
 
-    .page-header {
-        margin-bottom: 48px;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
+    .geo-bg::before {
+        content: ''; position: absolute; width: 100%; height: 100%;
+        background-image: linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+        background-size: 50px 50px;
     }
 
-    .header-text h1 {
-        font-size: 2rem;
-        font-weight: 700;
-        letter-spacing: -0.025em;
-        color: #0F172A;
-        margin: 0 0 8px 0;
-    }
+    .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
 
-    .header-text p {
-        font-size: 1.05rem;
-        color: #64748B;
-        margin: 0;
+    .header-section { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .header-text h1 { font-size: 2.8rem; font-weight: 900; letter-spacing: -1.5px; color: #1E293B; margin: 0; }
+    .header-text p { font-size: 1.1rem; color: #64748B; margin: 5px 0 0 0; font-weight: 500; }
+    
+    .live-badge {
+        background: #DCFCE7; color: #16A34A; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 800;
+        display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; margin-bottom: 12px;
     }
+    .live-badge::before { content: ''; width: 8px; height: 8px; background: #16A34A; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
 
-    .total-managed-badge {
-        background: #F1F5F9;
-        color: #475569;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    /* Bulk Actions Bar (Minimal) */
+    /* Bulk Actions Bar */
     .bulk-bar {
-        background: white;
-        padding: 12px 20px;
-        border-radius: 12px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        padding: 15px 30px;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         display: none;
         align-items: center;
-        gap: 16px;
-        margin-bottom: 24px;
-        border: 1px solid #E2E8F0;
+        gap: 20px;
+        margin-bottom: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.6);
         position: sticky;
         top: 20px;
-        z-index: 100;
-        animation: slideDown 0.3s ease;
+        z-index: 1000;
+        animation: slideDown 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
     }
 
-    .bulk-label {
-        font-weight: 600;
-        color: #334155;
-        font-size: 0.875rem;
-    }
+    .selected-indicator { font-weight: 800; color: #1E293B; font-size: 0.95rem; }
 
-    .btn-bulk {
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-size: 0.8125rem;
-        font-weight: 600;
-        border: 1px solid transparent;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 6px;
+    .btn-bulk-action {
+        padding: 10px 25px; border-radius: 12px; font-size: 0.9rem; font-weight: 800; border: none; cursor: pointer;
+        transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px;
     }
+    .btn-bulk-approve { background: #10B981; color: white; }
+    .btn-bulk-approve:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
+    .btn-bulk-reject { background: #EF4444; color: white; }
+    .btn-bulk-reject:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3); }
 
-    .btn-bulk-approve { background: #0F172A; color: white; }
-    .btn-bulk-approve:hover { background: #1E293B; }
-    .btn-bulk-reject { background: #FFFFFF; color: #DC2626; border-color: #FECACA; }
-    .btn-bulk-reject:hover { background: #FEF2F2; }
-
-    /* Request Grid */
-    .request-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
-        gap: 20px;
-    }
+    /* Request Cards - Compact Version */
+    .request-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 18px; }
 
     .request-card {
-        background: #FFFFFF;
-        border-radius: 12px;
-        padding: 20px;
-        border: 1px solid #E2E8F0;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        transition: border-color 0.2s, box-shadow 0.2s;
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        gap: 20px;
-        align-items: center;
+        background: white; border-radius: 20px; padding: 18px; border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.03); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        display: grid; grid-template-columns: auto 1fr; gap: 15px; position: relative;
     }
+    .request-card:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(0,0,0,0.06); }
 
-    .request-card:hover {
-        border-color: #CBD5E1;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
+    .card-checkbox-area { display: flex; align-items: flex-start; padding-top: 3px; }
+    .modern-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #6366F1; border-radius: 4px; }
 
-    .checkbox-wrapper {
-        display: flex;
-        align-items: center;
-    }
+    .card-body { display: flex; flex-direction: column; gap: 15px; }
 
-    .modern-checkbox {
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-        accent-color: #0F172A;
+    .student-info { display: flex; align-items: center; gap: 12px; }
+    .student-avatar {
+        width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg, #6366f1, #a855f7); color: white; font-weight: 800; font-size: 1rem;
+        box-shadow: 0 5px 15px rgba(99, 102, 241, 0.15);
     }
+    .student-name { font-size: 0.95rem; font-weight: 850; color: #1E293B; margin-bottom: 0; display: block; line-height: 1.2; }
+    .student-email { font-size: 0.75rem; color: #64748B; font-weight: 500; }
 
-    .student-info-box {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
+    .trip-info { padding: 10px 14px; background: #f0f9ff; border-radius: 14px; border: 1px solid #e0f2fe; }
+    .trip-label { font-size: 0.65rem; font-weight: 800; color: #0ea5e9; text-transform: uppercase; margin-bottom: 4px; display: block; opacity: 0.8; }
+    .trip-title { font-size: 0.85rem; font-weight: 750; color: #1e3a8a; display: block; margin-bottom: 2px; }
+    .req-date { font-size: 0.7rem; color: #64748B; font-weight: 600; display: flex; align-items: center; gap: 4px; }
 
-    .student-initial {
-        width: 42px;
-        height: 42px;
-        background: #F8FAFC;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        font-size: 1rem;
-        color: #475569;
-        border: 1px solid #E2E8F0;
-    }
-
-    .student-details h3 {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #0F172A;
-        margin: 0 0 2px 0;
-    }
-
-    .student-details p {
-        font-size: 0.8125rem;
-        color: #64748B;
-        margin: 0;
-    }
-
-    .trip-info-box {
-        border-left: 1px solid #F1F5F9;
-        padding-left: 20px;
-    }
-
-    .trip-name {
-        font-size: 0.9375rem;
-        font-weight: 600;
-        color: #334155;
-        margin-bottom: 4px;
-        display: block;
-    }
-
-    .requested-on {
-        font-size: 0.75rem;
-        color: #94A3B8;
-        font-weight: 500;
-    }
-
-    .actions-and-status {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        gap: 12px;
-    }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; }
 
     .status-badge {
-        padding: 4px 10px;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.025em;
+        padding: 5px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
     }
+    .status-pending { background: #fffbeb; color: #d97706; border: 1px solid #fef3c7; }
+    .status-approved { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
+    .status-rejected { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
 
-    .status-pending { background: #FFF7ED; color: #C2410C; }
-    .status-approved { background: #F0FDF4; color: #15803D; }
-    .status-rejected { background: #FEF2F2; color: #B91C1C; }
-
-    .btn-group {
-        display: flex;
-        gap: 8px;
+    .action-group { display: flex; gap: 8px; }
+    .action-circle-btn {
+        width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        font-size: 1rem; transition: all 0.25s ease; text-decoration: none; border: none;
     }
-
-    .action-btn-minimal {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
-        text-decoration: none;
-        transition: background 0.2s;
-        font-size: 1.1rem;
+    .btn-approve { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
+    .btn-approve:hover { background: #16a34a; color: white; transform: scale(1.1); }
+    .btn-reject { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
+    .btn-reject:hover { background: #dc2626; color: white; transform: scale(1.1); }
+    .btn-reapprove {
+        background: #f8fafc; color: #475569; padding: 0 12px; border-radius: 8px; height: 32px; font-size: 0.65rem; font-weight: 800;
+        display: flex; align-items: center; border: 1px solid #e2e8f0;
     }
+    .btn-reapprove:hover { background: #1e293b; color: white; border-color: #1e293b; }
 
-    .btn-approve-min { color: #10B981; background: #F0FDF4; border: 1px solid #DCFCE7; }
-    .btn-approve-min:hover { background: #10B981; color: white; border-color: #10B981; }
-
-    .btn-reject-min { color: #EF4444; background: #FEF2F2; border: 1px solid #FEE2E2; }
-    .btn-reject-min:hover { background: #EF4444; color: white; border-color: #EF4444; }
-
-    .btn-reapprove-min {
-        width: auto;
-        padding: 0 10px;
-        font-size: 0.7rem;
-        font-weight: 700;
-        background: #F8FAFC;
-        color: #64748B;
-        border: 1px solid #E2E8F0;
-    }
-
-    .btn-reapprove-min:hover {
-        background: #0F172A;
-        color: white;
-        border-color: #0F172A;
-    }
-
-    @keyframes slideDown {
-        from { transform: translateY(-10px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-
-    /* Full Responsiveness */
-    @media (max-width: 1200px) {
-        .header-text h1 { font-size: 1.8rem; }
-    }
-
-    @media (max-width: 992px) {
-        .dashboard-container { padding: 40px 20px; }
-        .request-grid { grid-template-columns: 1fr; }
-    }
+    @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
     @media (max-width: 768px) {
-        .page-header { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 32px; }
-        .request-card { grid-template-columns: 1fr; gap: 16px; padding: 16px; }
-        .trip-info-box { border-left: none; padding-left: 0; margin-top: -8px; }
-        .actions-and-status { flex-direction: row; justify-content: space-between; align-items: center; border-top: 1px solid #F1F5F9; padding-top: 16px; width: 100%; }
-        .btn-bulk { padding: 6px 12px; font-size: 0.75rem; }
-        .bulk-bar { flex-wrap: wrap; gap: 10px; padding: 10px; }
-        .bulk-label { width: 100%; margin-bottom: 5px; }
-    }
-
-    @media (max-width: 480px) {
-        .header-text h1 { font-size: 1.6rem; }
-        .student-info-box { gap: 12px; }
-        .student-initial { width: 36px; height: 36px; font-size: 0.9rem; }
-        .student-details h3 { font-size: 0.95rem; }
-        .status-badge { font-size: 0.65rem; padding: 3px 8px; }
-        .action-btn-minimal { width: 30px; height: 30px; font-size: 1rem; }
-        .btn-reapprove-min { font-size: 0.6rem; }
+        .header-section { flex-direction: column; align-items: flex-start; gap: 20px; }
+        .request-grid { grid-template-columns: 1fr; }
+        .request-card { grid-template-columns: 1fr; gap: 12px; }
     }
 </style>
 
+<div class="geo-bg"></div>
+
 <div class="dashboard-container">
-    <div class="page-header">
+    <div class="header-section">
         <div class="header-text">
+            <span class="live-badge">Live Monitoring</span>
             <h1>Enrollment Requests</h1>
             <p>Manage and process student applications</p>
         </div>
-        <div class="total-managed-badge">
-            <i class="ri-history-line"></i>
-            Total Managed: <?php echo $requests->num_rows; ?>
+        <div style="background: #eff6ff; padding: 12px 24px; border-radius: 18px; border: 1px solid #dbeafe; display: flex; flex-direction: column; align-items: flex-end;">
+            <span style="font-size: 0.65rem; font-weight: 800; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px;">Live Queue</span>
+            <div style="font-size: 2rem; font-weight: 900; color: #1e3a8a; line-height: 1;"><?php echo $requests->num_rows; ?> <span style="font-size: 0.8rem; font-weight: 700; color: #60a5fa; margin-left: -2px;">Requests</span></div>
         </div>
     </div>
 
     <form method="POST" id="requestForm">
-        <!-- Bulk Bar (Minimal) -->
+        <!-- Floating Bulk Bar -->
         <div id="bulkBar" class="bulk-bar">
-            <div class="checkbox-wrapper">
+            <div style="display: flex; align-items: center; gap: 15px;">
                 <input type="checkbox" onchange="toggleSelectAll(this)" class="modern-checkbox">
+                <span id="selectedCount" class="selected-indicator">0 items selected</span>
             </div>
-            <span id="selectedCount" class="bulk-label">0 items selected</span>
             <div style="flex: 1;"></div>
-            <button type="submit" name="bulk_action" value="approve" class="btn-bulk btn-bulk-approve">Approve</button>
-            <button type="submit" name="bulk_action" value="reject" class="btn-bulk btn-bulk-reject">Reject</button>
+            <button type="submit" name="bulk_action" value="approve" class="btn-bulk-action btn-bulk-approve"><i class="ri-check-double-line"></i> Bulk Approve</button>
+            <button type="submit" name="bulk_action" value="reject" class="btn-bulk-action btn-bulk-reject"><i class="ri-close-circle-line"></i> Bulk Reject</button>
         </div>
 
         <div class="request-grid">
@@ -353,56 +211,51 @@ $requests = $conn->query("SELECT e.*, u.name as student_name, u.email as student
                 $status_class = 'status-' . $r['status'];
             ?>
                 <div class="request-card">
-                    <div style="display: flex; align-items: center; gap: 20px;">
-                        <div class="checkbox-wrapper">
-                            <input type="checkbox" name="selected_requests[]" value="<?php echo $r['id']; ?>"
-                                    class="admin-checkbox modern-checkbox" onchange="updateBulkBar()">
-                        </div>
-
-                        <div class="student-info-box">
-                            <div class="student-initial">
-                                <?php echo strtoupper(substr($r['student_name'], 0, 1)); ?>
-                            </div>
-                            <div class="student-details">
-                                <h3><?php echo htmlspecialchars($r['student_name']); ?></h3>
-                                <p><?php echo htmlspecialchars($r['student_email']); ?></p>
-                            </div>
-                        </div>
+                    <div class="card-checkbox-area">
+                        <input type="checkbox" name="selected_requests[]" value="<?php echo $r['id']; ?>"
+                                class="admin-checkbox modern-checkbox" onchange="updateBulkBar()">
                     </div>
 
-                    <div class="trip-info-box">
-                        <span class="trip-name"><?php echo htmlspecialchars($r['trip_title']); ?></span>
-                        <span class="requested-on">
-                            Requested <?php echo date('M d, Y', strtotime($r['request_date'])); ?>
-                        </span>
-                    </div>
+                    <div class="card-body">
+                        <div class="student-info">
+                            <div class="student-avatar"><?php echo strtoupper(substr($r['student_name'], 0, 1)); ?></div>
+                            <div>
+                                <span class="student-name"><?php echo htmlspecialchars($r['student_name']); ?></span>
+                                <span class="student-email"><?php echo htmlspecialchars($r['student_email']); ?></span>
+                            </div>
+                        </div>
 
-                    <div class="actions-and-status">
-                        <span class="status-badge <?php echo $status_class; ?>">
-                            <?php echo $r['status']; ?>
-                        </span>
+                        <div class="trip-info">
+                            <span class="trip-label">Requested Expedition</span>
+                            <span class="trip-title"><?php echo htmlspecialchars($r['trip_title']); ?></span>
+                            <span class="req-date"><i class="ri-time-line"></i> <?php echo date('M d, Y', strtotime($r['request_date'])); ?></span>
+                        </div>
 
-                        <div class="btn-group">
-                            <?php if ($r['status'] == 'pending'): ?>
-                                <a href="?action=approve&rid=<?php echo $r['id']; ?>" class="action-btn-minimal btn-approve-min" title="Approve">
-                                    <i class="ri-check-line"></i>
-                                </a>
-                                <a href="?action=reject&rid=<?php echo $r['id']; ?>" class="action-btn-minimal btn-reject-min" title="Reject">
-                                    <i class="ri-close-line"></i>
-                                </a>
-                            <?php else: ?>
-                                <a href="?action=approve&rid=<?php echo $r['id']; ?>" class="action-btn-minimal btn-reapprove-min" title="Re-Approve">
-                                    RE-APPROVE
-                                </a>
-                            <?php endif; ?>
+                        <div class="card-footer">
+                            <span class="status-badge <?php echo $status_class; ?>"><?php echo $r['status']; ?></span>
+
+                            <div class="action-group">
+                                <?php if ($r['status'] == 'pending'): ?>
+                                    <a href="?action=approve&rid=<?php echo $r['id']; ?>" class="action-circle-btn btn-approve" title="Approve Request">
+                                        <i class="ri-check-line"></i>
+                                    </a>
+                                    <a href="?action=reject&rid=<?php echo $r['id']; ?>" class="action-circle-btn btn-reject" title="Reject Request">
+                                        <i class="ri-close-line"></i>
+                                    </a>
+                                <?php else: ?>
+                                    <a href="?action=approve&rid=<?php echo $r['id']; ?>" class="btn-reapprove" title="Change Status to Approved">
+                                        RE-APPROVE
+                                    </a>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                 </div>
             <?php endwhile; else: ?>
-                <div style="grid-column: 1/-1; text-align: center; padding: 100px; color: #64748B; background: white; border: 1px solid #E2E8F0; border-radius: 12px;">
-                    <i class="ri-inbox-line" style="font-size: 2.5rem; display: block; margin-bottom: 20px; opacity: 0.5;"></i>
-                    <h2 style="font-weight: 650; font-size: 1.1rem; color: #334155;">No requests at the moment</h2>
-                    <p style="font-size: 0.9rem;">New student applications will be listed here.</p>
+                <div style="grid-column: 1/-1; text-align: center; padding: 120px; color: #94A3B8; background: white; border-radius: 30px; border: 2px dashed #E2E8F0;">
+                    <i class="ri-inbox-archive-line" style="font-size: 4rem; display: block; margin-bottom: 25px; opacity: 0.3;"></i>
+                    <h2 style="font-weight: 850; font-size: 1.4rem; color: #1E293B; margin-bottom: 10px;">Queue is Empty</h2>
+                    <p style="font-size: 1rem; font-weight: 500;">No student applications pending at this moment.</p>
                 </div>
             <?php endif; ?>
         </div>
@@ -430,6 +283,5 @@ $requests = $conn->query("SELECT e.*, u.name as student_name, u.email as student
         }
     }
 </script>
-
 
 <?php require_once 'admin_footer.php'; ?>

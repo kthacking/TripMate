@@ -75,7 +75,6 @@ $total_destinations = count(array_unique(array_column($trips, 'destination')));
 
 <!-- ━━━ Page Hero Banner ━━━ -->
 <div class="pt-hero">
-    <div class="pt-hero-bg"></div>
     <div class="container" style="position: relative; z-index: 2;">
         <div class="pt-hero-content">
             <span class="pt-hero-badge"><i class="ri-fire-fill"></i> Trending Destinations</span>
@@ -97,7 +96,7 @@ $total_destinations = count(array_unique(array_column($trips, 'destination')));
 </div>
 
 <!-- ━━━ Filters Bar ━━━ -->
-<div class="container" style="margin-top: -35px; position: relative; z-index: 10;">
+<div class="container" style="margin-top: -30px; position: relative; z-index: 10;">
     <form method="GET" class="pt-filters-bar" id="filtersForm">
         <!-- Search -->
         <div class="pt-search-wrap">
@@ -109,8 +108,7 @@ $total_destinations = count(array_unique(array_column($trips, 'destination')));
             <option value="">All Types</option>
             <?php foreach ($validTypes as $vt): ?>
                 <option value="<?php echo $vt; ?>" <?php echo($type_filter === $vt) ? 'selected' : ''; ?>><?php echo $vt; ?></option>
-            <?php
-endforeach; ?>
+            <?php endforeach; ?>
         </select>
         <!-- Sort -->
         <select name="sort" class="pt-filter-select" onchange="document.getElementById('filtersForm').submit();">
@@ -125,27 +123,24 @@ endforeach; ?>
 </div>
 
 <!-- ━━━ Trips Grid ━━━ -->
-<div class="container section" style="padding-top: 40px;">
+<div class="container section" style="padding-top: 60px; padding-bottom: 80px;">
     
     <?php if ($search !== '' || $type_filter !== ''): ?>
-        <div style="margin-bottom: 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-            <span style="color: var(--text-light); font-size: 0.92rem;">
+        <div style="margin-bottom: 30px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <span style="color: var(--text-light); font-size: 1rem;">
                 Showing <strong style="color: var(--secondary-color);"><?php echo $total_trips; ?></strong> result(s)
                 <?php if ($search !== ''): ?>
                     for "<strong style="color: var(--primary-color);"><?php echo htmlspecialchars($search); ?></strong>"
-                <?php
-    endif; ?>
+                <?php endif; ?>
                 <?php if ($type_filter !== ''): ?>
-                    in <span class="badge badge-purple"><?php echo htmlspecialchars($type_filter); ?></span>
-                <?php
-    endif; ?>
+                    in <span style="background: rgba(234, 88, 12, 0.1); color: var(--primary-color); padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem;"><?php echo htmlspecialchars($type_filter); ?></span>
+                <?php endif; ?>
             </span>
-            <a href="popular_trips.php" style="font-size: 0.85rem; color: var(--primary-color); font-weight: 600;">
+            <a href="popular_trips.php" style="font-size: 0.9rem; color: #dc2626; font-weight: 600; text-decoration: none; padding-left: 10px; border-left: 1px solid #e2e8f0;">
                 <i class="ri-close-circle-line"></i> Clear Filters
             </a>
         </div>
-    <?php
-endif; ?>
+    <?php endif; ?>
 
     <?php if (count($trips) > 0): ?>
     <div class="popular-trips-grid">
@@ -156,43 +151,43 @@ endif; ?>
         $duration = $d1->diff($d2)->days + 1;
         $avg = round(floatval($t['avg_rating']), 1);
         $days_until = ceil((strtotime($t['start_date']) - time()) / 86400);
-?>
-        <div class="trip-card pop-trip-card fade-in">
+        ?>
+        <div class="pop-trip-card">
             <!-- Image -->
-            <div class="trip-img-wrap pop-trip-img-wrap">
+            <div class="pop-trip-img-wrap">
                 <?php if (!empty($t['image_url'])): ?>
-                    <img src="<?php echo htmlspecialchars($t['image_url']); ?>" alt="<?php echo htmlspecialchars($t['title']); ?>" class="trip-image" loading="lazy">
-                <?php
-        else: ?>
+                    <img src="<?php echo htmlspecialchars($t['image_url']); ?>" alt="<?php echo htmlspecialchars($t['title']); ?>" loading="lazy">
+                <?php else: ?>
                     <div class="pop-trip-img-placeholder">
                         <i class="ri-landscape-line"></i>
                     </div>
-                <?php
-        endif; ?>
+                <?php endif; ?>
                 <div class="trip-img-badges">
                     <span class="trip-type-tag"><?php echo htmlspecialchars($t['trip_type']); ?></span>
                     <?php if ($days_until > 0): ?>
-                        <span class="trip-type-tag" style="background:rgba(72,187,120,0.3);border-color:rgba(72,187,120,0.4);">
-                            <i class="ri-time-line" style="font-size:0.65rem;"></i> In <?php echo $days_until; ?> days
+                        <span class="trip-type-tag" style="background:#f0fdf4; color:#16a34a;">
+                            <i class="ri-time-line" style="font-size:0.75rem;"></i> In <?php echo $days_until; ?> days
                         </span>
-                    <?php
-        endif; ?>
+                    <?php endif; ?>
                 </div>
                 <div class="trip-price-badge">$<?php echo number_format($t['cost']); ?></div>
             </div>
 
             <!-- Content -->
-            <div class="trip-content">
+            <div class="pop-trip-content">
+                <div class="trip-meta" style="margin-bottom: 8px;">
+                    <span><i class="ri-map-pin-2-fill"></i> <?php echo htmlspecialchars($t['destination']); ?></span>
+                </div>
+                
                 <h3 class="trip-title"><?php echo htmlspecialchars($t['title']); ?></h3>
                 
-                <div class="trip-meta">
-                    <span><i class="ri-map-pin-2-fill"></i> <?php echo htmlspecialchars($t['destination']); ?></span>
-                    <span><i class="ri-calendar-event-line"></i> <?php echo $duration; ?> Days</span>
+                <div class="trip-meta" style="color: var(--text-light); border-bottom: none; margin-bottom: 2px;">
+                    <span><i class="ri-calendar-event-line"></i> <?php echo $duration; ?> Days Trip</span>
                 </div>
 
                 <!-- Date Range -->
-                <div style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 12px;">
-                    <i class="ri-calendar-line" style="color: var(--primary-color); font-size:0.82rem;"></i>
+                <div style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 12px; display:flex; align-items:center; gap: 5px;">
+                    <i class="ri-calendar-line" style="color: var(--primary-color);"></i>
                     <?php echo date('M d', strtotime($t['start_date'])); ?> – <?php echo date('M d, Y', strtotime($t['end_date'])); ?>
                 </div>
 
@@ -202,17 +197,15 @@ endif; ?>
                     <div class="pop-trip-rating">
                         <span class="pop-trip-stars"><?php echo $stars_display; ?></span>
                         <?php if ($t['review_count'] > 0): ?>
-                            <span class="pop-trip-rating-num"><?php echo $avg; ?> (<?php echo $t['review_count']; ?>)</span>
-                        <?php
-        else: ?>
-                            <span class="pop-trip-rating-num">New</span>
-                        <?php
-        endif; ?>
+                            <span class="pop-trip-rating-num" style="font-weight:700; color:var(--secondary-color); margin-left:4px;"><?php echo $avg; ?> <span style="font-weight:500; color:var(--text-light);">out of 5</span></span>
+                        <?php else: ?>
+                            <span class="pop-trip-rating-num" style="background:var(--bg-light); padding:2px 6px; border-radius:4px;">No reviews yet</span>
+                        <?php endif; ?>
                     </div>
                     <!-- Enrolled -->
-                    <div class="pop-trip-enrolled">
-                        <i class="ri-group-line"></i> 
-                        <?php echo $t['enrolled_count']; ?>/<?php echo $t['max_participants'] > 0 ? $t['max_participants'] : '∞'; ?>
+                    <div class="pop-trip-enrolled" title="Enrolled Users">
+                        <i class="ri-group-fill"></i> 
+                        <?php echo $t['enrolled_count']; ?> / <?php echo $t['max_participants'] > 0 ? $t['max_participants'] : '∞'; ?>
                     </div>
                 </div>
 
@@ -220,362 +213,200 @@ endif; ?>
                 <div class="pop-trip-footer">
                     <div class="pop-trip-organizer">
                         <div class="pop-trip-avatar"><?php echo strtoupper(substr($t['organizer'], 0, 1)); ?></div>
-                        <span><?php echo htmlspecialchars($t['organizer']); ?></span>
+                        <span>By <?php echo htmlspecialchars($t['organizer']); ?></span>
                     </div>
                     <?php if (isset($_SESSION['user_id'])): ?>
-                        <a href="trip.php?id=<?php echo $t['id']; ?>" class="trip-cta-btn" style="width:auto; padding:10px 20px;">
-                            Book now <i class="ri-arrow-right-line"></i>
+                        <a href="trip.php?id=<?php echo $t['id']; ?>" class="trip-cta-btn">
+                            Book <i class="ri-arrow-right-s-line" style="position:relative; top:1px;"></i>
                         </a>
-                    <?php
-        else: ?>
-                        <a href="login.php" class="trip-cta-btn" style="width:auto; padding:10px 20px;">
-                            Book now <i class="ri-arrow-right-line"></i>
+                    <?php else: ?>
+                        <a href="login.php" class="trip-cta-btn">
+                            Book <i class="ri-arrow-right-s-line" style="position:relative; top:1px;"></i>
                         </a>
-                    <?php
-        endif; ?>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
-        <?php
-    endforeach; ?>
+        <?php endforeach; ?>
     </div>
 
-    <?php
-else: ?>
+    <?php else: ?>
     <!-- Empty State -->
     <div class="pt-empty-state">
         <div class="pt-empty-icon">
-            <i class="ri-road-map-line"></i>
+            <i class="ri-plane-line"></i>
         </div>
         <h3>No Trips Found</h3>
         <?php if ($search !== '' || $type_filter !== ''): ?>
             <p>Try adjusting your search or filters to find what you're looking for.</p>
-            <a href="popular_trips.php" class="btn btn-primary" style="margin-top: 16px;">
+            <a href="popular_trips.php" class="trip-cta-btn" style="display:inline-block; margin-top: 16px;">
                 <i class="ri-restart-line"></i> Clear Filters
             </a>
-        <?php
-    else: ?>
+        <?php else: ?>
             <p>Our TripMakers are crafting amazing experiences. Check back soon for exciting destinations!</p>
-        <?php
-    endif; ?>
+        <?php endif; ?>
     </div>
-    <?php
-endif; ?>
+    <?php endif; ?>
 </div>
 
 <!-- ━━━ Styles ━━━ -->
 <style>
+/* ── Theme Definitions ── */
+:root {
+    --primary-color: #ea580c;
+    --primary-hover: #c2410c;
+    --secondary-color: #1e293b;
+    --text-color: #334155;
+    --text-light: #64748b;
+    --bg-light: #f8fafc;
+    --white: #ffffff;
+    --radius-sm: 12px;
+    --radius-md: 20px;
+    --radius-lg: 30px;
+    --shadow-sm: 0 4px 6px rgba(0,0,0,0.05);
+    --shadow-md: 0 10px 25px rgba(0,0,0,0.08);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* ── Hero Banner ── */
 .pt-hero {
     position: relative;
-    padding: 100px 0 80px;
+    padding: 140px 0 100px;
     overflow: hidden;
-    margin-top: -65px;
-}
-.pt-hero-bg {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
-    z-index: 0;
-}
-.pt-hero-bg::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: 
-        radial-gradient(circle at 20% 80%, rgba(108,99,255,0.25) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(245,0,87,0.15) 0%, transparent 50%);
-}
-.pt-hero-bg::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    right: 0;
-    height: 80px;
-    background: linear-gradient(to top, var(--bg-color), transparent);
+    margin-top: -85px;
+    background: linear-gradient(135deg, #fffaf5 0%, #ffffff 100%);
 }
 .pt-hero-content {
     text-align: center;
-    color: white;
+    color: var(--secondary-color);
     max-width: 640px;
     margin: 0 auto;
-    padding-top: 40px;
 }
 .pt-hero-badge {
-    display: inline-block;
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(10px);
-    color: #F6E05E;
-    font-size: 0.78rem;
-    font-weight: 700;
-    padding: 6px 18px;
-    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(234, 88, 12, 0.1);
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 8px 18px;
+    border-radius: 50px;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    margin-bottom: 20px;
-    border: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 24px;
+    border: 1px solid rgba(234, 88, 12, 0.2);
 }
 .pt-hero-title {
-    font-size: 3.2rem;
+    font-size: 3.5rem;
     font-weight: 800;
     margin-bottom: 16px;
     line-height: 1.1;
-    letter-spacing: -1px;
+    letter-spacing: -1.5px;
+    color: var(--secondary-color);
 }
 .pt-hero-sub {
-    font-size: 1.05rem;
-    opacity: 0.75;
+    font-size: 1.15rem;
+    color: var(--text-light);
     line-height: 1.6;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
 }
 .pt-hero-stats {
     display: inline-flex;
     align-items: center;
     gap: 28px;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(10px);
-    padding: 16px 32px;
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--white);
+    padding: 16px 36px;
+    border-radius: var(--radius-md);
+    border: 1px solid #edf2f7;
+    box-shadow: var(--shadow-sm);
 }
-.pt-stat {
-    text-align: center;
-}
-.pt-stat strong {
-    display: block;
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: white;
-}
-.pt-stat span {
-    font-size: 0.78rem;
-    color: rgba(255,255,255,0.6);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.pt-stat-divider {
-    width: 1px;
-    height: 36px;
-    background: rgba(255,255,255,0.15);
-}
+.pt-stat { text-align: center; }
+.pt-stat strong { display: block; font-size: 1.8rem; font-weight: 900; color: var(--secondary-color); line-height: 1; margin-bottom: 4px; }
+.pt-stat span { font-size: 0.8rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+.pt-stat-divider { width: 1px; height: 36px; background: #edf2f7; }
 
 /* ── Filters Bar ── */
 .pt-filters-bar {
     display: flex;
-    gap: 12px;
+    gap: 15px;
     align-items: center;
     background: var(--white);
-    padding: 14px 20px;
-    border-radius: 18px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-    border: 1px solid #edf2f7;
+    padding: 15px 20px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    border: 1px solid #f1f5f9;
     flex-wrap: wrap;
 }
-.pt-search-wrap {
-    flex: 1;
-    min-width: 200px;
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-.pt-search-wrap i {
-    position: absolute;
-    left: 14px;
-    color: #a0aec0;
-    font-size: 1.1rem;
-}
-.pt-search-input {
-    width: 100%;
-    padding: 12px 14px 12px 42px;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    font-family: inherit;
-    font-size: 0.92rem;
-    background: #f8fafc;
-    transition: all 0.3s ease;
-}
-.pt-search-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    background: white;
-    box-shadow: 0 0 0 3px rgba(108,99,255,0.1);
-}
-.pt-filter-select {
-    padding: 12px 16px;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    font-family: inherit;
-    font-size: 0.88rem;
-    background: #f8fafc;
-    color: var(--text-color);
-    cursor: pointer;
-    min-width: 150px;
-    transition: all 0.3s ease;
-}
-.pt-filter-select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-}
-.pt-search-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 12px 24px;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 14px rgba(108,99,255,0.3);
-}
-.pt-search-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(108,99,255,0.5);
-}
+.pt-search-wrap { flex: 1; min-width: 250px; position: relative; display: flex; align-items: center; }
+.pt-search-wrap i { position: absolute; left: 16px; color: #94a3b8; font-size: 1.2rem; }
+.pt-search-input { width: 100%; padding: 14px 14px 14px 44px; border: 1px solid #e2e8f0; border-radius: 14px; font-family: inherit; font-size: 0.95rem; background: #f8fafc; transition: var(--transition); color: var(--text-color); }
+.pt-search-input:focus { outline: none; border-color: var(--primary-color); background: white; box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.1); }
+.pt-filter-select { padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 14px; font-family: inherit; font-size: 0.95rem; background: #f8fafc; color: var(--secondary-color); cursor: pointer; min-width: 170px; transition: var(--transition); font-weight: 500; }
+.pt-filter-select:focus { outline: none; border-color: var(--primary-color); background: white; box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.1); }
+.pt-search-btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 30px; background: var(--primary-color); color: white; border: none; border-radius: 14px; font-family: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 14px rgba(234, 88, 12, 0.25); }
+.pt-search-btn:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4); }
 
-/* ── Grid ── */
-.popular-trips-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 30px;
-}
+/* ── Grid & Cards ── */
+.popular-trips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 35px; }
 
-/* ── Card overrides for popular trips ── */
-.pop-trip-card {
-    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-    border: 1px solid #edf2f7;
-}
-.pop-trip-card:hover {
-    box-shadow: 0 20px 50px rgba(108,99,255,0.12);
-    border-color: rgba(108,99,255,0.2);
-}
+.pop-trip-card { background: var(--white); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); transition: var(--transition); border: 1px solid #f1f5f9; display: flex; flex-direction: column; }
+.pop-trip-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-md); border-color: #ffedd5; }
 
-/* ── Image ── */
-.pop-trip-img-wrap {
-    height: 230px;
-}
-.pop-trip-img-placeholder {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #e0e7ff, #f0f0ff);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 4rem;
-    color: #a0aec0;
-}
+/* Image Area */
+.pop-trip-img-wrap { width: 100%; height: 240px; overflow: hidden; position: relative; }
+.pop-trip-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+.pop-trip-card:hover .pop-trip-img-wrap img { transform: scale(1.05); }
 
-/* ── Info Row ── */
-.pop-trip-info-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-top: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
-    margin-bottom: 16px;
-}
-.pop-trip-rating {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.pop-trip-stars {
-    color: #F6E05E;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
-}
-.pop-trip-rating-num {
-    font-size: 0.8rem;
-    color: var(--text-light);
-    font-weight: 500;
-}
-.pop-trip-enrolled {
-    font-size: 0.82rem;
-    color: var(--text-light);
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-.pop-trip-enrolled i {
-    color: var(--primary-color);
-    font-size: 1rem;
-}
+.trip-img-badges { position: absolute; top: 18px; left: 18px; display: flex; gap: 8px; flex-wrap: wrap; z-index: 2; }
+.trip-type-tag { background: rgba(255,255,255,0.95); padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; color: var(--primary-color); backdrop-filter: blur(4px); letter-spacing: 0.5px; text-transform: uppercase; }
 
-/* ── Footer ── */
-.pop-trip-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: auto;
-}
-.pop-trip-organizer {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.85rem;
-    color: var(--text-light);
-    font-weight: 500;
-}
-.pop-trip-avatar {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    font-weight: 700;
-    flex-shrink: 0;
-}
+.trip-price-badge { position: absolute; bottom: 18px; right: 18px; background: var(--secondary-color); color: white; padding: 8px 16px; border-radius: 20px; font-weight: 900; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 2; }
+.pop-trip-img-placeholder { width: 100%; height: 100%; background: #fffaf5; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: #fed7aa; }
+
+/* Content Area */
+.pop-trip-content { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
+.trip-meta { color: var(--text-light); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+.trip-meta i { color: var(--primary-color); font-size: 1rem; }
+.trip-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 12px; color: var(--secondary-color); line-height: 1.3; letter-spacing: -0.5px; }
+
+/* Info Row */
+.pop-trip-info-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; margin: auto 0 20px; }
+.pop-trip-rating { display: flex; align-items: center; }
+.pop-trip-stars { color: #fbbf24; font-size: 1rem; letter-spacing: 2px; }
+.pop-trip-rating-num { font-size: 0.85rem; }
+.pop-trip-enrolled { font-size: 0.85rem; color: var(--text-color); font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.pop-trip-enrolled i { color: var(--primary-color); font-size: 1.1rem; }
+
+/* Footer Area */
+.pop-trip-footer { display: flex; justify-content: space-between; align-items: center; }
+.pop-trip-organizer { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; color: var(--text-light); font-weight: 600; }
+.pop-trip-avatar { width: 40px; height: 40px; border-radius: 50%; background: #ffedd5; color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 900; }
+
+.trip-cta-btn { background: var(--primary-color); color: white; padding: 12px 24px; border-radius: 50px; font-weight: 800; font-size: 0.95rem; text-decoration: none; transition: var(--transition); border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.trip-cta-btn:hover { background: var(--primary-hover); transform: translateY(-3px); box-shadow: 0 6px 18px rgba(234, 88, 12, 0.3); color: white; }
 
 /* ── Empty State ── */
-.pt-empty-state {
-    text-align: center;
-    padding: 80px 20px;
-    background: white;
-    border-radius: 20px;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid #edf2f7;
-}
-.pt-empty-icon {
-    font-size: 4rem;
-    color: #e2e8f0;
-    margin-bottom: 20px;
-}
-.pt-empty-state h3 {
-    color: var(--secondary-color);
-    margin-bottom: 10px;
-    font-size: 1.5rem;
-}
-.pt-empty-state p {
-    color: var(--text-light);
-    max-width: 400px;
-    margin: 0 auto;
-}
+.pt-empty-state { text-align: center; padding: 100px 20px; background: white; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); border: 1px solid #f1f5f9; margin-top: 20px; }
+.pt-empty-icon { font-size: 5rem; color: #e2e8f0; margin-bottom: 24px; }
+.pt-empty-state h3 { color: var(--secondary-color); margin-bottom: 12px; font-size: 1.8rem; font-weight: 800; }
+.pt-empty-state p { color: var(--text-light); max-width: 450px; margin: 0 auto; font-size: 1.05rem; line-height: 1.6; }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-    .pt-hero-title { font-size: 2.2rem; }
-    .pt-filters-bar { flex-direction: column; }
+    .pt-hero-title { font-size: 2.5rem; }
+    .pt-filters-bar { flex-direction: column; align-items: stretch; border-radius: 16px; padding: 20px; }
     .pt-search-wrap { width: 100%; }
     .pt-filter-select { width: 100%; }
     .popular-trips-grid { grid-template-columns: 1fr; }
+    .pop-trip-img-wrap { height: 220px; }
 }
 @media (max-width: 480px) {
-    .pop-trip-img-wrap { height: 180px; }
-    .pop-trip-body { padding: 18px 16px 16px; }
-    .pt-hero { padding: 80px 0 60px; }
-    .pt-hero-stats { padding: 12px 20px; gap: 18px; }
+    .pt-hero { padding: 120px 0 60px; }
+    .pt-hero-stats { padding: 12px 20px; gap: 15px; flex-direction: column; border-radius: var(--radius-sm); }
+    .pt-stat-divider { width: 100%; height: 1px; }
 }
 </style>
 
 <?php include 'footer.php'; ?>
+

@@ -25,93 +25,196 @@ $media_trend = $conn->query("SELECT DATE_FORMAT(uploaded_at, '%Y-%m') as month, 
 $type_stats = $conn->query("SELECT trip_type, COUNT(*) as c FROM trips GROUP BY trip_type");
 ?>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
+<style>
+    /* Hide Default Navbar and Header */
+    .admin-nav, .admin-content > h2, .admin-content > div:first-child {
+        display: none !important;
+    }
 
-    <!-- Most Popular Trips -->
-    <div style="background: white; border-radius: 16px; padding: 25px; box-shadow: var(--shadow-sm);">
-        <h3 style="font-size: 1.1rem; color: #111827; margin-bottom: 20px;">Most Popular Trips</h3>
-        <div style="display: flex; flex-direction: column; gap: 15px;">
-            <?php while ($t = $most_popular_trips->fetch_assoc()): ?>
-                <div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 8px;">
-                        <span style="font-weight: 600;"><?php echo htmlspecialchars($t['title']); ?></span>
-                        <span style="color: #6B7280;"><?php echo $t['enrolls']; ?> Explorers</span>
-                    </div>
-                    <div style="width: 100%; height: 8px; background: #EEE; border-radius: 4px; overflow: hidden;">
-                        <div
-                            style="width: <?php echo min(100, $t['enrolls'] * 10); ?>%; height: 100%; background: var(--admin-primary);">
+    body {
+        background-color: #F8F9FA;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* Geometric Background */
+    .geo-bg {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden;
+        background: radial-gradient(circle at 10% 20%, rgba(243, 232, 255, 0.5) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(220, 252, 231, 0.5) 0%, transparent 40%),
+                    radial-gradient(circle at 50% 50%, rgba(255, 237, 213, 0.4) 0%, transparent 60%);
+    }
+
+    .geo-bg::before {
+        content: ''; position: absolute; width: 100%; height: 100%;
+        background-image: linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+        background-size: 50px 50px;
+    }
+
+    .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+    .header-section { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .header-text h1 { font-size: 2.8rem; font-weight: 900; letter-spacing: -1.5px; color: #1e3b37ff; margin: 0; }
+    .header-text p { font-size: 1.1rem; color: #64748B; margin: 5px 0 0 0; font-weight: 500; }
+    
+    .live-badge {
+        background: #DCFCE7; color: #16A34A; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 800;
+        display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; margin-bottom: 12px;
+    }
+    .live-badge::before { content: ''; width: 8px; height: 8px; background: #16A34A; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+
+    .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; }
+
+    .analytics-card {
+        background: white; border-radius: 24px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+        border: 1px solid rgba(255, 255, 255, 0.5); transition: all 0.4s ease;
+        position: relative; overflow: hidden;
+    }
+    .analytics-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+    .analytics-card h3 { font-size: 1.4rem; font-weight: 850; color: #1E293B; margin: 0 0 30px 0; letter-spacing: -0.5px; }
+
+    /* Progress Styles */
+    .progress-item { margin-bottom: 25px; }
+    .progress-info { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 700; color: #475569; font-size: 0.95rem; }
+    .progress-bar-bg { height: 12px; background: #F1F5F9; border-radius: 20px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; border-radius: 20px; transition: width 1.5s cubic-bezier(0.1, 0, 0.2, 1); }
+
+    /* TM Card Styles */
+    .tm-item {
+        display: flex; align-items: center; justify-content: space-between; padding: 18px; border-radius: 20px;
+        background: #F8FAFC; border: 1px solid #F1F5F9; margin-bottom: 15px; transition: all 0.3s ease;
+    }
+    .tm-item:hover { background: white; border-color: #E2E8F0; transform: scale(1.02); }
+    .tm-info { display: flex; align-items: center; gap: 12px; }
+    .tm-avatar {
+        width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg, #6366F1, #5cf6d0ff); color: white; font-weight: 800; font-size: 1rem;
+    }
+    .tm-name { font-weight: 700; color: #1E293B; }
+    .tm-badge { background: linear-gradient(135deg, #c084fc, #a78bfa); color: white; padding: 5px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; }
+
+    /* Gradient Variants */
+    .grad-purple { background: linear-gradient(135deg, #c084fc, #a78bfa); }
+    .grad-green { background: linear-gradient(135deg, #86efac, #4ade80); }
+    .grad-orange { background: linear-gradient(135deg, #fdba74, #fb923c); }
+
+    /* Success Rate Ring */
+    .success-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; }
+    .percentage-ring { position: relative; width: 160px; height: 160px; }
+    .percentage-ring span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2.2rem; font-weight: 900; color: #1E293B; }
+    
+    .rate-desc { font-size: 0.9rem; color: #64748B; margin-top: 20px; text-align: center; line-height: 1.5; font-weight: 500; }
+
+    /* Chart Area */
+    .chart-container { height: 260px; display: flex; align-items: flex-end; justify-content: space-around; padding: 40px 10px 10px 10px; border-bottom: 2px solid #F1F5F9; }
+    .chart-bar-wrap { display: flex; flex-direction: column; align-items: center; width: 12%; height: 100%; justify-content: flex-end; }
+    .chart-bar { width: 100%; border-radius: 10px 10px 0 0; position: relative; min-height: 5px; transition: height 1s ease; }
+    .chart-label { margin-top: 15px; font-size: 0.75rem; font-weight: 700; color: #94A3B8; text-transform: uppercase; }
+    .bar-tooltip { position: absolute; top: -30px; left: 0; right: 0; text-align: center; font-size: 0.85rem; font-weight: 900; color: #4338CA; }
+
+    @media (max-width: 1024px) {
+        .analytics-grid { grid-template-columns: 1fr; }
+        .wide-card { grid-column: span 1 !important; }
+    }
+
+    @media (max-width: 768px) {
+        .header-section { flex-direction: column; align-items: flex-start; gap: 20px; }
+    }
+    
+    /* Extra Card Visuals */
+    .analytics-card::after {
+        content: ''; position: absolute; width: 150px; height: 150px; right: -30px; bottom: -30px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%); border-radius: 50%; z-index: 0;
+    }
+</style>
+
+<div class="geo-bg"></div>
+
+<div class="dashboard-container">
+    <div class="header-section">
+        <div class="header-text">
+            <span class="live-badge">Live Monitoring</span>
+            <h1>Global Platform Analytics</h1>
+            <p>Monitor platform performance and insights</p>
+        </div>
+    </div>
+
+    <div class="analytics-grid">
+
+        <!-- Most Popular Trips -->
+        <div class="analytics-card">
+            <h3>Most Popular Trips</h3>
+            <div class="progress-list">
+                <?php while ($t = $most_popular_trips->fetch_assoc()): ?>
+                    <div class="progress-item">
+                        <div class="progress-info">
+                            <span><?php echo htmlspecialchars($t['title']); ?></span>
+                            <span><?php echo $t['enrolls']; ?> Explorers</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill grad-purple" style="width: <?php echo min(100, $t['enrolls'] * 10); ?>%;"></div>
                         </div>
                     </div>
-                </div>
-            <?php endwhile; ?>
+                <?php endwhile; ?>
+            </div>
         </div>
-    </div>
 
-    <!-- Active TripMakers -->
-    <div style="background: white; border-radius: 16px; padding: 25px; box-shadow: var(--shadow-sm);">
-        <h3 style="font-size: 1.1rem; color: #111827; margin-bottom: 20px;">Top TripMakers</h3>
-        <div style="display: flex; flex-direction: column; gap: 15px;">
-            <?php while ($tm = $most_active_tm->fetch_assoc()): ?>
-                <div
-                    style="display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 12px; border: 1px solid #F3F4F6;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div
-                            style="width: 32px; height: 32px; background: #F3F4F6; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #6B7280; font-size: 0.75rem;">
-                            <?php echo strtoupper(substr($tm['name'], 0, 1)); ?>
+        <!-- Top TripMakers -->
+        <div class="analytics-card">
+            <h3>Top TripMakers</h3>
+            <div class="tm-list">
+                <?php while ($tm = $most_active_tm->fetch_assoc()): ?>
+                    <div class="tm-item">
+                        <div class="tm-info">
+                            <div class="tm-avatar"><?php echo strtoupper(substr($tm['name'], 0, 1)); ?></div>
+                            <span class="tm-name"><?php echo htmlspecialchars($tm['name']); ?></span>
                         </div>
-                        <span
-                            style="font-weight: 600; font-size: 0.9rem;"><?php echo htmlspecialchars($tm['name']); ?></span>
+                        <span class="tm-badge"><?php echo $tm['trip_count']; ?> Trips</span>
                     </div>
-                    <span class="admin-badge" style="background: #E0E7FF; color: #4338CA;"><?php echo $tm['trip_count']; ?>
-                        Trips</span>
+                <?php endwhile; ?>
+            </div>
+        </div>
+
+        <!-- Approval Rate -->
+        <div class="analytics-card">
+            <h3>Approval Rate</h3>
+            <div class="success-container">
+                <div class="percentage-ring">
+                    <svg viewBox="0 0 36 36" style="width: 100%; height: 100%;">
+                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none"
+                            stroke="#F1F5F9" stroke-width="3" />
+                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none"
+                            stroke="url(#grad-green-svg)" stroke-width="3" stroke-linecap="round" stroke-dasharray="<?php echo $success_rate; ?>, 100" />
+                        <defs>
+                            <linearGradient id="grad-green-svg" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#86efac;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#4ade80;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span><?php echo $success_rate; ?>%</span>
                 </div>
-            <?php endwhile; ?>
+                <p class="rate-desc">Percentage of join requests that are approved system-wide.</p>
+            </div>
         </div>
-    </div>
 
-</div>
-
-<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px;">
-
-    <!-- Success Rate -->
-    <div
-        style="background: white; border-radius: 16px; padding: 25px; box-shadow: var(--shadow-sm); text-align: center;">
-        <h4 style="font-size: 0.9rem; color: #6B7280; margin-bottom: 15px;">Approval Rate</h4>
-        <div style="position: relative; width: 120px; height: 120px; margin: 0 auto 20px;">
-            <svg viewBox="0 0 36 36" style="width: 100%; height: 100%;">
-                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none"
-                    stroke="#EEE" stroke-width="3" />
-                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none"
-                    stroke="#4338CA" stroke-width="3" stroke-dasharray="<?php echo $success_rate; ?>, 100" />
-            </svg>
-            <div
-                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; font-weight: 800; color: #111827;">
-                <?php echo $success_rate; ?>%</div>
-        </div>
-        <div style="font-size: 0.8rem; color: #6B7280;">Percentage of join requests that are approved system-wide.</div>
-    </div>
-
-    <!-- Media Trends -->
-    <div
-        style="background: white; border-radius: 16px; padding: 25px; box-shadow: var(--shadow-sm); grid-column: span 2;">
-        <h3 style="font-size: 1.1rem; color: #111827; margin-bottom: 25px;">Media Upload Trends</h3>
-        <div
-            style="display: flex; align-items: flex-end; justify-content: space-around; height: 200px; padding-bottom: 30px; position: relative; border-bottom: 1px solid #EEE;">
-            <?php while ($row = $media_trend->fetch_assoc()): ?>
-                <div style="display: flex; flex-direction: column; align-items: center; width: 12%;">
-                    <div
-                        style="width: 100%; min-height: 5px; height: <?php echo min(100, $row['count'] * 10); ?>%; background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 6px 6px 0 0; position: relative;">
-                        <div
-                            style="position: absolute; top: -25px; left: 0; right: 0; text-align: center; font-size: 0.75rem; font-weight: 700; color: #4338CA;">
-                            <?php echo $row['count']; ?></div>
+        <!-- Media Upload Trends -->
+        <div class="analytics-card wide-card" style="grid-column: span 2;">
+            <h3>Media Upload Trends</h3>
+            <div class="chart-container">
+                <?php while ($row = $media_trend->fetch_assoc()): ?>
+                    <div class="chart-bar-wrap">
+                        <div class="chart-bar grad-orange" style="height: <?php echo min(100, $row['count'] * 10); ?>%;">
+                            <div class="bar-tooltip"><?php echo $row['count']; ?></div>
+                        </div>
+                        <div class="chart-label"><?php echo $row['month']; ?></div>
                     </div>
-                    <div style="margin-top: 10px; font-size: 0.7rem; color: #9CA3AF; white-space: nowrap;">
-                        <?php echo $row['month']; ?></div>
-                </div>
-            <?php endwhile; ?>
+                <?php endwhile; ?>
+            </div>
         </div>
-    </div>
 
+    </div>
 </div>
 
 <?php require_once 'admin_footer.php'; ?>
