@@ -81,8 +81,8 @@ $reviews = $conn->query("SELECT r.*, u.name as user_name FROM reviews r JOIN use
         .hero-text p { font-size: 1.2rem; color: var(--text-light); margin-bottom: 40px; }
         
         .hero-visual { position: relative; }
-        .hero-img-wrap { width: 100%; aspect-ratio: 4/5; border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 0; overflow: hidden; box-shadow: var(--shadow-md); }
-        .hero-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-img-wrap { width: 100%; overflow: visible; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .hero-img-wrap img { width: 100%; max-width: 650px; height: auto; object-fit: contain; mix-blend-mode: multiply; filter: contrast(1.05) brightness(1.05); animation: float 6s ease-in-out infinite; transform-origin: center; }
         
         .hero-float-card { position: absolute; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 15px 20px; border-radius: var(--radius-sm); box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 12px; }
         .float-top { top: 40px; left: -30px; animation: float 4s ease-in-out infinite; }
@@ -174,11 +174,15 @@ $reviews = $conn->query("SELECT r.*, u.name as user_name FROM reviews r JOIN use
             .footer-grid { grid-template-columns: 1fr; }
             .section { padding: 50px 0; }
         }
+
+        
+
+      
     </style>
 </head>
 <body>
 
-    <!-- Navigation -->
+    <!-- Navigation --> 
     <nav class="navbar">
         <div class="container nav-container">
             <a href="index.php" class="logo">
@@ -227,8 +231,10 @@ $reviews = $conn->query("SELECT r.*, u.name as user_name FROM reviews r JOIN use
 
     <!-- Hero Section -->
     <section class="hero" id="home">
+
+
         <div class="container hero-container">
-            <div class="hero-text">
+            <div class="hero-text" style="z-index:999;">
                 <h1>Travel Memories <br> You'll <span>Never Forget</span></h1>
                 <p>Navigating the globe effortlessly, we transform wanderlust dreams into seamless adventures. With us, the world becomes your accessible playground.</p>
                 <div style="display: flex; gap: 15px; flex-wrap: wrap;">
@@ -240,7 +246,7 @@ $reviews = $conn->query("SELECT r.*, u.name as user_name FROM reviews r JOIN use
             </div>
             <div class="hero-visual">
                 <div class="hero-img-wrap">
-                    <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop" alt="Travel">
+                    <img src="assets/hero_island.png" alt="Floating Island">
                 </div>
                 <!-- Floating Elements -->
                 <div class="hero-float-card float-top">
@@ -265,8 +271,22 @@ $reviews = $conn->query("SELECT r.*, u.name as user_name FROM reviews r JOIN use
     <section class="section">
         <div class="container">
             <div class="text-center" style="margin-bottom: 50px;">
-                <h2 class="section-title">We Make World Travel Easy</h2>
-                <p class="section-subtitle">Experience the difference with our premium expedition planning.</p>
+                <h2 class="section-title" style="padding-left: 100px;">We Make World Travel Easy</h2>
+                <p class="section-subtitle" style="padding-left: 100px;">Experience the difference with our premium expedition planning.</p>
+                
+                <style>
+                    .jeep-animation {  max-width: 400px; margin: 30px auto; position: absolute; top: 530px; }
+                    .jeep-animation img { width: 100%; height: auto; display: block; border-radius: var(--radius-lg); mix-blend-mode: multiply;}
+                    .headlight-glow { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(235, 211, 211, 1) 0%, rgba(255, 251, 6, 1) 40%, transparent 70%); box-shadow: 0 0 30px 15px rgba(51, 49, 49, 1); mix-blend-mode: screen; animation: blink-light 2s infinite alternate; pointer-events: none; z-index: 10; aspect-ratio: 1; transform: translate(-50%, -50%); }
+                    .hl-left { top: 55.4%; left: 51.8%; width: 10%; }
+                    .hl-right { top: 61%; left: 87%; width: 5%; }
+                    @keyframes blink-light { 0%, 20% { opacity: 0.1; box-shadow: none; filter: blur(5px); } 80%, 100% { opacity: 1; box-shadow: 0 0 40px 20px rgba(255,255,180,0.7); filter: blur(0px); } }
+                </style>
+                <div class="jeep-animation">
+                    <img src="assets/red_jeep.png" alt="Travel Jeep">
+                    <div class="headlight-glow hl-left"></div>
+                    <div class="headlight-glow hl-right"></div>
+                </div>
             </div>
             <div class="feature-grid">
                 <div class="feature-card">
@@ -521,6 +541,242 @@ $reviews = $conn->query("SELECT r.*, u.name as user_name FROM reviews r JOIN use
     // Prevent closing when clicking inside dropdown
     document.getElementById('adminLoginDropdown')?.addEventListener('click', function(e) { e.stopPropagation(); });
     </script>
+
+<!-- Mobile Video Reel System -->
+<div id="reels-overlay" style="display: none; position: fixed; inset: 0; z-index: 99999; background: #000; overflow: hidden; touch-action: none; font-family: var(--font-family);">
+    
+    <!-- Unified Intro Screen -->
+    <div id="reels-intro-screen" style="position: absolute; inset: 0; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 20px; transition: opacity 0.8s ease;">
+        
+        <!-- Warning Info -->
+        <div style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.2); padding: 30px; border-radius: 20px; text-align: center; color: #fff; box-shadow: 0 20px 40px rgba(0,0,0,0.5); max-width: 320px; width: 100%; margin-bottom: 30px; animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+            <i class="ri-smartphone-line" style="font-size: 3rem; margin-bottom: 10px; display: block; color: var(--primary-color);"></i>
+            <p style="font-size: 1.1rem; font-weight: 700; line-height: 1.4; margin-bottom: 5px;">
+                Mobile Optimization Active
+            </p>
+            <p style="font-size: 0.9rem; font-weight: 400; opacity: 0.8; margin-bottom: 0;">
+                Please enter full screen for the best vertical viewing experience.
+            </p>
+        </div>
+
+        <img id="intro-gif" src="" alt="Travel GIF" style="width: 120px; height: auto; background: rgba(255,255,255,0.1); border-radius: 50%; padding: 15px; margin-bottom: 40px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); animation: floatAndZoomGif 3s ease-in-out infinite;">
+
+        <!-- Enter Full Screen Button -->
+        <button id="btn-enter-fullscreen" style="background: var(--primary-color); color: #fff; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; box-shadow: 0 10px 20px rgba(234, 88, 12, 0.3); animation: pulsePlay 2s infinite; font-family: inherit;">
+            <i class="ri-fullscreen-line" style="font-size: 1.4rem;"></i> ENTER FULL SCREEN
+        </button>
+        
+    </div>
+
+    <!-- Video Layers -->
+    <video id="reel-vid-1" class="reel-video active" playsinline preload="auto"></video>
+    <video id="reel-vid-2" class="reel-video" playsinline preload="auto"></video>
+    
+</div>
+
+<style>
+@keyframes pulsePlay {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+@keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+.reel-video {
+    position: absolute;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.05);
+    transition: opacity 0.6s ease, transform 4s ease-out;
+    pointer-events: none;
+}
+.reel-video.active {
+    opacity: 1;
+    transform: scale(1);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.innerWidth < 768) {
+        document.body.style.overflow = 'hidden';
+        
+        const overlay = document.getElementById('reels-overlay');
+        const introScreen = document.getElementById('reels-intro-screen');
+        const btnFullscreen = document.getElementById('btn-enter-fullscreen');
+        const introGif = document.getElementById('intro-gif');
+        const v1 = document.getElementById('reel-vid-1');
+        const v2 = document.getElementById('reel-vid-2');
+        
+        const videosList = <?php 
+            $videos = array_diff(scandir('assets/videos'), array('..', '.'));
+            $video_urls = [];
+            foreach($videos as $video) {
+                if(pathinfo($video, PATHINFO_EXTENSION) === 'mp4') {
+                    $video_urls[] = 'assets/videos/' . $video;
+                }
+            }
+            echo json_encode(array_values($video_urls));
+        ?>;
+
+        // Random GIF assignment
+        const allGifs = ['assets/e1.gif', 'assets/e2.gif', 'assets/download (1).gif', 'assets/download (2).gif', 'assets/download (3).gif'];
+        introGif.src = allGifs[Math.floor(Math.random() * allGifs.length)];
+        
+        overlay.style.display = 'block';
+        
+        let currentIndex = 0;
+        let activePlayer = 1;
+        let isTransitioning = false;
+        let systemStarted = false;
+
+        function getNextIndex() {
+            return (currentIndex + 1) % videosList.length;
+        }
+        function getPrevIndex() {
+            return (currentIndex - 1 + videosList.length) % videosList.length;
+        }
+
+        // Init setup
+        v1.src = videosList[0];
+        v2.src = videosList[1];
+        v1.load();
+        v2.load();
+
+        const requestFS = () => {
+            const docElm = document.documentElement;
+            if (docElm.requestFullscreen) { docElm.requestFullscreen().catch(()=>{}); }
+            else if (docElm.webkitRequestFullScreen) { docElm.webkitRequestFullScreen(); }
+        };
+
+        const startSystem = () => {
+            if (systemStarted) return;
+            systemStarted = true;
+            requestFS();
+            
+            // Unlock audio context for both video elements during the initial user gesture
+            v1.muted = false;
+            v2.muted = false;
+            
+            const p2 = v2.play();
+            if(p2 !== undefined) {
+                p2.then(() => { v2.pause(); }).catch(e=>console.log(e));
+            }
+            
+            introScreen.style.opacity = '0';
+            setTimeout(() => { introScreen.style.display = 'none'; }, 800);
+            
+            const p = v1.play();
+            if(p !== undefined) p.catch(e=>console.log(e));
+        };
+
+        // Button Listener
+        btnFullscreen.addEventListener('click', () => {
+            if(!systemStarted) startSystem();
+        });
+
+        // Overlay swipe tracking logic
+        let touchStartY = 0;
+        let touchEndY = 0;
+        
+        overlay.addEventListener('touchstart', e => {
+            touchStartY = e.changedTouches[0].screenY;
+        }, {passive: true});
+        
+
+        overlay.addEventListener('touchend', e => {
+            touchEndY = e.changedTouches[0].screenY;
+            if(systemStarted) handleSwipe();
+        }, {passive: true});
+
+        function handleSwipe() {
+            if (touchStartY - touchEndY > 50) {
+                // Swipe Up
+                playNext();
+            } else if (touchEndY - touchStartY > 50) {
+                // Swipe Down
+                playPrev();
+            }
+        }
+
+        function playNext() {
+            if (isTransitioning) return;
+            isTransitioning = true;
+            
+            currentIndex = getNextIndex();
+            const currEl = activePlayer === 1 ? v1 : v2;
+            const nextEl = activePlayer === 1 ? v2 : v1;
+            
+            nextEl.currentTime = 0;
+            const p = nextEl.play();
+            if(p !== undefined) p.catch(e=>console.log(e));
+            
+            nextEl.classList.add('active');
+            currEl.classList.remove('active');
+            
+            activePlayer = activePlayer === 1 ? 2 : 1;
+            
+            setTimeout(() => { 
+                currEl.pause(); 
+                currEl.src = videosList[getNextIndex()];
+                currEl.load();
+                isTransitioning = false;
+            }, 600);
+        }
+
+        function playPrev() {
+            if (isTransitioning) return;
+            isTransitioning = true;
+            
+            currentIndex = getPrevIndex();
+            const currEl = activePlayer === 1 ? v1 : v2;
+            const prevEl = activePlayer === 1 ? v2 : v1;
+            
+            prevEl.src = videosList[currentIndex];
+            prevEl.load();
+            prevEl.currentTime = 0;
+            const p = prevEl.play();
+            if(p !== undefined) p.catch(e=>console.log(e));
+            
+            prevEl.classList.add('active');
+            currEl.classList.remove('active');
+            
+            activePlayer = activePlayer === 1 ? 2 : 1;
+            
+            setTimeout(() => { 
+                currEl.pause();
+                currEl.src = videosList[getNextIndex()];
+                currEl.load();
+                isTransitioning = false;
+            }, 600);
+        }
+
+        v1.addEventListener('ended', playNext);
+        v2.addEventListener('ended', playNext);
+
+        // Turn off on landscape
+        const checkLandscape = () => {
+            if (window.innerWidth > window.innerHeight && window.innerWidth >= 480) {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    document.body.style.overflow = '';
+                    v1.pause();
+                    v2.pause();
+                }, 800);
+            }
+        };
+        window.addEventListener('orientationchange', checkLandscape);
+        window.addEventListener('resize', checkLandscape);
+    }
+});
+</script>
+
 <?php include_once 'cursor.php'; ?>
 </body>
 </html>
