@@ -351,73 +351,391 @@ ul {
     cursor: pointer;
 }
 
-/* Card Grid for Trips */
+/* ═══════════════════════════════════════════════════════════════
+   PREMIUM CARD DESIGN SYSTEM
+   Two variants: Standard (white) and Overlay (image-background)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Grid ── */
 .trip-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 32px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 28px;
     margin-top: 40px;
 }
 
+/* ── Standard Card (White BG with Image on top) ── */
 .trip-card {
     background: var(--white);
-    border-radius: var(--radius-lg);
+    border-radius: 22px;
     overflow: hidden;
-    box-shadow: var(--shadow-md);
-    transition: var(--transition);
-    border: 1px solid #edf2f7;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    border: 1px solid rgba(237, 242, 247, 0.8);
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .trip-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(108, 99, 255, 0.12), 0 8px 20px rgba(0, 0, 0, 0.08);
+    border-color: rgba(108, 99, 255, 0.15);
 }
 
-.trip-image {
+/* ── Image wrapper ── */
+.trip-card .trip-img-wrap {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+}
+
+.trip-card .trip-img-wrap .trip-image {
     width: 100%;
-    height: 200px;
+    height: 100%;
     object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
+.trip-card:hover .trip-img-wrap .trip-image {
+    transform: scale(1.08);
+}
+
+/* Gradient overlay on image bottom */
+.trip-card .trip-img-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ── Tag badges on image ── */
+.trip-card .trip-img-badges {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 2;
+}
+
+.trip-card .trip-type-tag {
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.trip-card .trip-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.trip-card .trip-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* ── Price badge on image ── */
+.trip-card .trip-price-badge {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 800;
+    padding: 8px 18px;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(108, 99, 255, 0.45);
+    z-index: 2;
+    letter-spacing: -0.3px;
+}
+
+/* ── Card Body ── */
 .trip-content {
-    padding: 20px;
+    padding: 22px 24px 20px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
 .trip-title {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 700;
     margin-bottom: 8px;
     color: var(--secondary-color);
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .trip-meta {
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-bottom: 16px;
-    font-size: 0.9rem;
+    margin-bottom: 14px;
+    font-size: 0.85rem;
     color: var(--text-light);
 }
 
-.trip-price {
-    font-size: 1.25rem;
-    font-weight: 700;
+.trip-meta i {
     color: var(--primary-color);
-    margin-top: auto;
+    margin-right: 3px;
+    font-size: 0.9rem;
 }
 
+.trip-price {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-top: auto;
+    letter-spacing: -0.5px;
+}
+
+/* ── Card Footer — CTA Button ── */
 .trip-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 16px;
     padding-top: 16px;
-    border-top: 1px solid #edf2f7;
+    border-top: 1px solid #f0f2f5;
+}
+
+.trip-card .trip-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    color: white;
+    font-size: 0.92rem;
+    font-weight: 600;
+    border-radius: 14px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(108, 99, 255, 0.25);
+    letter-spacing: 0.2px;
+}
+
+.trip-card .trip-cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(108, 99, 255, 0.4);
+}
+
+.trip-card .trip-cta-btn i {
+    transition: transform 0.3s ease;
+}
+
+.trip-card .trip-cta-btn:hover i {
+    transform: translateX(3px);
+}
+
+/* ── Outline CTA variant ── */
+.trip-card .trip-cta-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(108, 99, 255, 0.06);
+    color: var(--primary-color);
+    font-size: 0.88rem;
+    font-weight: 600;
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1.5px solid rgba(108, 99, 255, 0.15);
+}
+
+.trip-card .trip-cta-outline:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(108, 99, 255, 0.3);
+}
+
+/* ═══ OVERLAY CARD (Image as Background, Dark Gradient) ═══ */
+.trip-card-overlay {
+    position: relative;
+    border-radius: 22px;
+    overflow: hidden;
+    height: 300px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+
+.trip-card-overlay:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.trip-card-overlay .overlay-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.trip-card-overlay:hover .overlay-img {
+    transform: scale(1.08);
+}
+
+.trip-card-overlay .overlay-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.25) 40%, rgba(0, 0, 0, 0.05) 100%);
+    z-index: 1;
+}
+
+.trip-card-overlay .overlay-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 24px;
+    z-index: 2;
+    color: white;
+}
+
+.trip-card-overlay .overlay-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    line-height: 1.3;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.trip-card-overlay .overlay-location {
+    font-size: 0.85rem;
+    opacity: 0.85;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 16px;
+}
+
+.trip-card-overlay .overlay-location i {
+    font-size: 0.9rem;
+}
+
+.trip-card-overlay .overlay-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.trip-card-overlay .overlay-see-more {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 0.3px;
+    transition: color 0.2s;
+}
+
+.trip-card-overlay:hover .overlay-see-more {
+    color: #fff;
+}
+
+.trip-card-overlay .overlay-arrow {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    transition: all 0.3s ease;
+}
+
+.trip-card-overlay:hover .overlay-arrow {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: translateX(4px);
+    box-shadow: 0 4px 16px rgba(108, 99, 255, 0.5);
+}
+
+/* ── Overlay top badges ── */
+.trip-card-overlay .overlay-badges {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 2;
+}
+
+.trip-card-overlay .overlay-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 768px) {
+    .trip-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .trip-card .trip-img-wrap {
+        height: 190px;
+    }
+
+    .trip-card-overlay {
+        height: 260px;
+    }
 }
 
 /* Dashboard Sidebar/Layout */
@@ -638,8 +956,25 @@ ul {
     display: none;
 }
 
-.notif-dropdown.show {
+.notif-dropdown.show,
+.admin-notif-dropdown.show {
     display: block;
+}
+
+.admin-notif-dropdown {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 300px;
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid #edf2f7;
+    z-index: 1100;
+    overflow: hidden;
+    transform-origin: top right;
+    animation: fadeIn 0.2s ease-out;
+    display: none;
 }
 
 .notif-header {

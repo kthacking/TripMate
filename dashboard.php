@@ -64,21 +64,28 @@ $notifs = $conn->query("SELECT * FROM notifications WHERE user_id=$user_id ORDER
             if ($result->num_rows > 0):
                 while($row = $result->fetch_assoc()):
             ?>
-                <div class="trip-card">
-                    <img src="<?php echo htmlspecialchars($row['image_url']); ?>" alt="Trip" class="trip-image">
-                    <div class="trip-content">
-                        <h3 class="trip-title"><?php echo htmlspecialchars($row['title']); ?></h3>
-                        <div class="trip-meta">
-                            <span><i class="ri-map-pin-line"></i> <?php echo htmlspecialchars($row['destination']); ?></span>
+                <a href="trip.php?id=<?php echo $row['id']; ?>" class="trip-card-overlay">
+                    <img src="<?php echo htmlspecialchars($row['image_url']); ?>" alt="Trip" class="overlay-img">
+                    <div class="overlay-gradient"></div>
+                    <div class="overlay-badges">
+                        <span class="overlay-status-badge" style="background: <?php echo $row['enroll_status'] == 'approved' ? 'rgba(72,187,120,0.35)' : 'rgba(237,137,54,0.35)'; ?>;">
+                            <span style="width:6px;height:6px;border-radius:50%;background:<?php echo $row['enroll_status'] == 'approved' ? '#48bb78' : '#ed8936'; ?>;display:inline-block;"></span>
+                            <?php echo ucfirst($row['enroll_status']); ?>
+                        </span>
+                    </div>
+                    <div class="overlay-content">
+                        <h3 class="overlay-title"><?php echo htmlspecialchars($row['title']); ?></h3>
+                        <div class="overlay-location">
+                            <i class="ri-map-pin-2-fill"></i> <?php echo htmlspecialchars($row['destination']); ?>
                         </div>
-                        <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center;">
-                            <span style="padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; background: <?php echo $row['enroll_status'] == 'approved' ? '#dbfce1' : '#feebc8'; ?>; color: <?php echo $row['enroll_status'] == 'approved' ? '#2f855a' : '#c05621'; ?>;">
-                                <?php echo ucfirst($row['enroll_status']); ?>
-                            </span>
-                            <a href="trip.php?id=<?php echo $row['id']; ?>" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9rem;">View</a>
+                        <div class="overlay-bottom">
+                            <span class="overlay-see-more">See more</span>
+                            <div class="overlay-arrow">
+                                <i class="ri-arrow-right-s-line"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
             <?php endwhile; else: ?>
                 <p style="color: var(--text-light); grid-column: 1/-1;">You haven't joined any trips yet.</p>
             <?php endif; ?>
@@ -92,52 +99,67 @@ $notifs = $conn->query("SELECT * FROM notifications WHERE user_id=$user_id ORDER
                     (SELECT COUNT(*) FROM enrollments WHERE trip_id=t.id AND status='approved') as joined_count 
                     FROM trips t 
                     WHERE status='active' AND t.id NOT IN (SELECT trip_id FROM enrollments WHERE student_id = $user_id)
-                    ORDER BY created_at DESC LIMIT 12";
+                    ORDER BY created_at DESC";
             $result = $conn->query($sql);
             if ($result->num_rows > 0):
                 while($row = $result->fetch_assoc()):
                      // Status Logic
-                    $status = 'OPEN';
-                    $status_class = 'status-open';
+                    $status = 'Open';
+                    $status_dot = '#48bb78';
+                    $status_bg = 'rgba(72,187,120,0.12)';
+                    $status_color = '#276749';
                     $percent = 0;
                     if($row['max_participants'] > 0) {
                         $percent = min(100, ($row['joined_count'] / $row['max_participants']) * 100);
                         if($row['joined_count'] >= $row['max_participants']) {
-                            $status = 'FULL';
-                            $status_class = 'status-full';
+                            $status = 'Full';
+                            $status_dot = '#e53e3e';
+                            $status_bg = 'rgba(229,62,62,0.12)';
+                            $status_color = '#9b2c2c';
                         }
                     }
                     if($row['registration_deadline'] && strtotime($row['registration_deadline']) < time()) {
-                        $status = 'CLOSED';
-                        $status_class = 'status-closed';
+                        $status = 'Closed';
+                        $status_dot = '#a0aec0';
+                        $status_bg = 'rgba(160,174,192,0.15)';
+                        $status_color = '#4a5568';
                     }
             ?>
-                <div class="trip-card" style="position: relative;">
-                    <div class="status-badge <?php echo $status_class; ?>"><?php echo $status; ?></div>
-                    <img src="<?php echo htmlspecialchars($row['image_url']); ?>" alt="Trip" class="trip-image">
+                <div class="trip-card">
+                    <!-- Image with badges -->
+                    <div class="trip-img-wrap">
+                        <img src="<?php echo htmlspecialchars($row['image_url']); ?>" alt="Trip" class="trip-image">
+                        <div class="trip-img-badges">
+                            <span class="trip-type-tag">
+                                <i class="ri-calendar-line" style="font-size:0.65rem;"></i> <?php echo date('d M', strtotime($row['start_date'])); ?> – <?php echo date('d M', strtotime($row['end_date'])); ?>
+                            </span>
+                            <span class="trip-status-pill" style="background:<?php echo $status_bg; ?>; color:<?php echo $status_color; ?>;">
+                                <span class="trip-status-dot" style="background:<?php echo $status_dot; ?>;"></span>
+                                <?php echo $status; ?>
+                            </span>
+                        </div>
+                        <div class="trip-price-badge">$<?php echo number_format($row['cost'], 0); ?></div>
+                    </div>
                     
                     <div class="trip-content">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-light); margin-bottom: 4px;">
-                             <span>#<?php echo $row['id']; ?></span>
-                             <span>📅 <?php echo date('d M', strtotime($row['start_date'])); ?> - <?php echo date('d M', strtotime($row['end_date'])); ?></span>
+                        <h3 class="trip-title"><?php echo htmlspecialchars($row['title']); ?></h3>
+                        <div class="trip-meta">
+                            <span><i class="ri-map-pin-2-fill"></i> <?php echo htmlspecialchars($row['destination'] ?? ''); ?></span>
                         </div>
                         
-                        <h3 class="trip-title"><?php echo htmlspecialchars($row['title']); ?></h3>
-                        
-                        <div style="margin: 10px 0;">
-                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
-                                <span>Participants</span>
-                                <span><?php echo $row['joined_count']; ?> / <?php echo $row['max_participants'] > 0 ? $row['max_participants'] : '∞'; ?></span>
+                        <!-- Participants bar -->
+                        <div style="margin: 8px 0 0;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px;">
+                                <span style="color:var(--text-light);"><i class="ri-group-line" style="font-size:0.82rem; margin-right:3px; color:var(--primary-color);"></i>Participants</span>
+                                <span style="font-weight:600; color:var(--secondary-color);"><?php echo $row['joined_count']; ?> / <?php echo $row['max_participants'] > 0 ? $row['max_participants'] : '∞'; ?></span>
                             </div>
-                            <div class="progress-container">
-                                <div class="progress-bar" style="width: <?php echo $percent; ?>%;"></div>
+                            <div style="height:5px; background:#edf2f7; border-radius:5px; overflow:hidden;">
+                                <div style="height:100%; width:<?php echo $percent; ?>%; background:linear-gradient(90deg, var(--primary-color), var(--primary-hover)); border-radius:5px; transition:width 0.5s ease;"></div>
                             </div>
                         </div>
 
-                        <div class="trip-price">$<?php echo number_format($row['cost'], 0); ?></div>
-                        
                         <div class="trip-footer">
-                            <a href="trip.php?id=<?php echo $row['id']; ?>" class="btn btn-outline" style="width: 100%; text-align: center;">View Details</a>
+                            <a href="trip.php?id=<?php echo $row['id']; ?>" class="trip-cta-btn">View Details <i class="ri-arrow-right-line"></i></a>
                         </div>
                     </div>
                 </div>
@@ -145,6 +167,7 @@ $notifs = $conn->query("SELECT * FROM notifications WHERE user_id=$user_id ORDER
                 <p style="color: var(--text-light); grid-column: 1/-1;">No new trips found.</p>
             <?php endif; ?>
         </div>
+
 
     <?php endif; ?>
 
@@ -164,29 +187,43 @@ $notifs = $conn->query("SELECT * FROM notifications WHERE user_id=$user_id ORDER
             if ($result->num_rows > 0):
                 while($row = $result->fetch_assoc()):
                     $earnings = $row['cost'] * $row['joined_count'];
+                    // Managed trip status
+                    $m_status = ucfirst($row['status']);
+                    $m_dot = '#48bb78'; $m_bg = 'rgba(72,187,120,0.12)'; $m_color = '#276749';
+                    if ($row['status'] === 'completed') { $m_dot = '#6C63FF'; $m_bg = 'rgba(108,99,255,0.12)'; $m_color = '#4c46b6'; }
+                    if ($row['status'] === 'cancelled') { $m_dot = '#e53e3e'; $m_bg = 'rgba(229,62,62,0.12)'; $m_color = '#9b2c2c'; }
             ?>
                 <div class="trip-card">
-                    <img src="<?php echo htmlspecialchars($row['image_url']); ?>" alt="Trip" class="trip-image">
+                    <div class="trip-img-wrap">
+                        <img src="<?php echo htmlspecialchars($row['image_url']); ?>" alt="Trip" class="trip-image">
+                        <div class="trip-img-badges">
+                            <span class="trip-type-tag"><i class="ri-briefcase-4-line" style="font-size:0.65rem;"></i> Managed</span>
+                            <span class="trip-status-pill" style="background:<?php echo $m_bg; ?>; color:<?php echo $m_color; ?>;">
+                                <span class="trip-status-dot" style="background:<?php echo $m_dot; ?>;"></span>
+                                <?php echo $m_status; ?>
+                            </span>
+                        </div>
+                    </div>
                     
                     <div class="trip-content">
                         <h3 class="trip-title"><?php echo htmlspecialchars($row['title']); ?></h3>
                         
                         <!-- Earnings Snapshot -->
-                        <div style="background: #f7fafc; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.9rem;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                <span style="color: var(--text-light);">Joined:</span>
-                                <strong><?php echo $row['joined_count']; ?> / <?php echo $row['max_participants'] ?: '∞'; ?></strong>
+                        <div style="background: linear-gradient(135deg, #f8f9ff, #f0f0ff); padding: 14px 16px; border-radius: 14px; margin: 8px 0 0; font-size: 0.88rem; border: 1px solid rgba(108,99,255,0.08);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span style="color: var(--text-light); display:flex; align-items:center; gap:5px;"><i class="ri-group-line" style="color:var(--primary-color); font-size:0.9rem;"></i> Joined</span>
+                                <strong style="color:var(--secondary-color);"><?php echo $row['joined_count']; ?> / <?php echo $row['max_participants'] ?: '∞'; ?></strong>
                             </div>
                             <div style="display: flex; justify-content: space-between;">
-                                <span style="color: var(--text-light);">Earnings:</span>
+                                <span style="color: var(--text-light); display:flex; align-items:center; gap:5px;"><i class="ri-money-dollar-circle-line" style="color:#48bb78; font-size:0.9rem;"></i> Earnings</span>
                                 <strong style="color: var(--primary-color);">$<?php echo number_format($earnings); ?></strong>
                             </div>
                         </div>
 
-                        <div class="trip-footer">
-                            <a href="trip.php?id=<?php echo $row['id']; ?>" class="btn btn-outline" style="flex: 1; text-align: center; margin-right: 8px;">Manage</a>
-                            <a href="edit_trip.php?id=<?php echo $row['id']; ?>" style="color: var(--primary-color); padding: 8px; margin-right: 8px;" title="Edit"><i class="ri-edit-2-line"></i></a>
-                            <a href="actions.php?action=delete_trip&trip_id=<?php echo $row['id']; ?>" onclick="return confirm('Delete this trip?');" style="color: #cbd5e0; padding: 8px;"><i class="ri-delete-bin-line"></i></a>
+                        <div class="trip-footer" style="gap: 8px;">
+                            <a href="trip.php?id=<?php echo $row['id']; ?>" class="trip-cta-outline" style="flex: 1;">Manage</a>
+                            <a href="edit_trip.php?id=<?php echo $row['id']; ?>" class="trip-cta-outline" style="padding: 10px 14px;" title="Edit"><i class="ri-edit-2-line"></i></a>
+                            <a href="actions.php?action=delete_trip&trip_id=<?php echo $row['id']; ?>" onclick="return confirm('Delete this trip?');" class="trip-cta-outline" style="padding: 10px 14px; color:#e53e3e; border-color:rgba(229,62,62,0.15); background:rgba(229,62,62,0.04);" title="Delete"><i class="ri-delete-bin-line"></i></a>
                         </div>
                     </div>
                 </div>

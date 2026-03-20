@@ -59,7 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </form>
         
         <p class="mt-4" style="font-size: 0.9rem; color: var(--text-light);">
-            Already have an account? <a href="login.php" style="color: var(--primary-color); font-weight: 600;">Log In</a>
+            Already have an account? <a href="login.php" style="color: var(--primary-color); font-weight: 600;">Log In</a><br>
+            <a href="admin_reg.php" style="color: var(--primary-color); font-weight: 600;">Admin Register</a>
         </p>
     </div>
 </div>
