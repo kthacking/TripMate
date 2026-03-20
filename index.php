@@ -5,8 +5,8 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once 'db.php';
 
 // Dynamic Data Fetching
-$featured_trips = $conn->query("SELECT * FROM trips WHERE status='active' ORDER BY created_at DESC LIMIT 4");
-$destinations = $conn->query("SELECT destination, MIN(image_url) as image FROM trips WHERE status='active' AND image_url IS NOT NULL AND image_url != '' GROUP BY destination LIMIT 4");
+$featured_trips = $conn->query("SELECT * FROM trips WHERE status='active' ORDER BY created_at DESC LIMIT 15");
+$destinations = $conn->query("SELECT destination, MIN(image_url) as image FROM trips WHERE status='active' AND image_url IS NOT NULL AND image_url != '' GROUP BY destination LIMIT 23");
 $media_gallery = $conn->query("SELECT file_path FROM media WHERE type='image' ORDER BY uploaded_at DESC LIMIT 6");
 $reviews = $conn->query("SELECT r.*, u.name as user_name FROM reviews r JOIN users u ON r.student_id = u.id ORDER BY r.created_at DESC LIMIT 3");
 ?>
@@ -302,7 +302,7 @@ $reviews = $conn->query("SELECT r.*, u.name as user_name FROM reviews r JOIN use
                 <?php if ($destinations && $destinations->num_rows > 0): 
                     while ($dest = $destinations->fetch_assoc()): 
                         $fallback = 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80';
-                        $img = !empty($dest['image']) ? $dest['image'] : $fallback;
+                        $img = !empty($dest['image']) ? $dest['image'] : $faback;
                 ?>
                     <div class="dest-item">
                         <img src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($dest['destination']); ?>" onerror="this.src='<?php echo $fallback; ?>'">

@@ -82,20 +82,49 @@ $stars = str_repeat("★", $trip['comfort_level']) . str_repeat("☆", 5 - $trip
 $days_left = ceil((strtotime($trip['registration_deadline']) - time()) / 86400);
 ?>
 
+<style>
+/* ── Theme Definitions ── */
+:root {
+    --primary-color: #ea580c;
+    --primary-hover: #c2410c;
+    --secondary-color: #1e293b;
+    --text-color: #334155;
+    --text-light: #64748b;
+    --bg-light: #f8fafc;
+    --white: #ffffff;
+    --shadow-sm: 0 4px 6px rgba(0,0,0,0.05);
+    --shadow-md: 0 10px 25px rgba(0,0,0,0.08);
+    --radius-sm: 12px;
+    --radius-md: 20px;
+    --radius-lg: 30px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-primary { background: var(--primary-color); color: var(--white); border-radius: 50px; font-weight: 800; border: none; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3); display: inline-block; text-align: center; }
+.btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4); color: white; }
+.btn-outline { background: white; border: 2px solid #e2e8f0; color: var(--secondary-color); border-radius: 50px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; transition: var(--transition); cursor: pointer;}
+.btn-outline:hover { border-color: var(--primary-color); color: var(--primary-color); background: #fffaf5; transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.badge { font-weight: 800; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; }
+.badge-green { background: #dcfce7; color: #16a34a; }
+.badge-purple { background: #e0e7ff; color: #4f46e5; }
+.badge-gray { background: #f1f5f9; color: #64748b; }
+.form-control { border-radius: 12px; border: 2px solid #edf2f7; padding: 12px; transition: var(--transition); background: #f8fafc; }
+.form-control:focus { border-color: var(--primary-color); background: white; box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.1); outline: none; }
+</style>
+
 <!-- HERO SECTION -->
-<div style="background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('<?php echo htmlspecialchars($trip['image_url']); ?>') center/cover no-repeat; height: 500px; position: relative; display: flex; align-items: flex-end; margin-top: -80px;">
+<div style="background: linear-gradient(rgba(15,23,42,0.4), rgba(15,23,42,0.85)), url('<?php echo htmlspecialchars($trip['image_url']); ?>') center/cover no-repeat; height: 500px; position: relative; display: flex; align-items: flex-end; margin-top: -80px;">
     <div style="width: 100%; padding: 60px 0;">
         <div class="container">
             <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px;">
                 <div style="color: white; flex: 1; min-width: 300px;">
                     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
                         <span class="badge" style="background: rgba(255,255,255,0.2); color: white; backdrop-filter: blur(10px);"><?php echo htmlspecialchars($trip['trip_type']); ?></span>
-                        <span style="color: #F6E05E; font-weight: 700;"><?php echo $stars; ?></span>
+                        <span style="color: #fbbf24; font-weight: 700; font-size: 1.1rem;"><?php echo $stars; ?></span>
                     </div>
-                    <h1 style="font-size: 3.5rem; line-height: 1.1; margin-bottom: 16px; text-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                    <h1 style="font-size: 3.5rem; line-height: 1.1; margin-bottom: 16px; text-shadow: 0 4px 10px rgba(0,0,0,0.3); font-weight: 800; letter-spacing: -1px;">
                         <?php echo htmlspecialchars($trip['title']); ?>
                         <?php if ($role == 'admin' || ($role == 'tripmaker' && $trip['created_by'] == $user_id)): ?>
-                            <a href="edit_trip.php?id=<?php echo $trip['id']; ?>" style="font-size: 1.5rem; color: white; opacity: 0.8; vertical-align: middle; margin-left: 15px;" title="Edit Trip"><i class="ri-edit-2-line"></i></a>
+                            <a href="edit_trip.php?id=<?php echo $trip['id']; ?>" style="font-size: 1.5rem; color: white; opacity: 0.8; vertical-align: middle; margin-left: 15px; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'" title="Edit Trip"><i class="ri-edit-2-line"></i></a>
                         <?php
 endif; ?>
                     </h1>
@@ -167,7 +196,7 @@ echo htmlspecialchars($description_clean);
             continue;
 ?>
                     <div style="position: relative; margin-bottom: 30px;">
-                        <div style="position: absolute; left: -36px; top: 0; width: 14px; height: 14px; border-radius: 50%; background: var(--primary-color); border: 3px solid white; box-shadow: 0 0 0 4px #e0e7ff;"></div>
+                        <div style="position: absolute; left: -36px; top: 0; width: 14px; height: 14px; border-radius: 50%; background: var(--primary-color); border: 3px solid white; box-shadow: 0 0 0 4px #ffedd5;"></div>
                         <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #edf2f7;">
                             <strong style="color: var(--primary-color); display: block; margin-bottom: 5px;">Day <?php echo $day_count++; ?></strong>
                             <div style="color: var(--text-color);"><?php echo htmlspecialchars(trim($day)); ?></div>
@@ -208,7 +237,7 @@ endif; ?>
         <?php if ($has_access): ?>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 id="media" style="margin: 0; color: var(--secondary-color); font-size: 1.8rem;">Shared Media</h2>
-                <a href="trip_gallery.php?id=<?php echo $trip_id; ?>" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.9rem;">View All Gallery</a>
+                <a href="trip_gallery.php?id=<?php echo $trip_id; ?>" class="btn-outline" style="padding: 10px 20px; font-size: 0.9rem;">View All Gallery</a>
             </div>
             
             <div style="background: var(--white); padding: 30px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); margin-bottom: 40px;">
@@ -221,10 +250,10 @@ endif; ?>
     if ($prev_res->num_rows > 0) {
         while ($p = $prev_res->fetch_assoc()) {
             if ($p['type'] == 'image') {
-                echo '<img src="' . htmlspecialchars($p['file_path']) . '" style="width: 120px; height: 120px; object-fit: cover; border-radius: 12px; flex-shrink: 0; box-shadow: var(--shadow-sm);">';
+                echo '<img src="' . htmlspecialchars($p['file_path']) . '" style="width: 120px; height: 120px; object-fit: cover; border-radius: 16px; flex-shrink: 0; box-shadow: var(--shadow-sm);">';
             }
             else {
-                echo '<div style="width: 120px; height: 120px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #a0aec0; border: 1px solid #edf2f7; flex-shrink: 0;"><i class="ri-video-line"></i></div>';
+                echo '<div style="width: 120px; height: 120px; background: #f8fafc; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #cbd5e1; border: 1px solid #edf2f7; flex-shrink: 0;"><i class="ri-video-line"></i></div>';
             }
         }
     }
@@ -236,7 +265,7 @@ endif; ?>
                 <div style="text-align: center;">
                     <h3 style="margin-bottom: 8px; font-size: 1.25rem;">Capture the Moments</h3>
                     <p style="color: var(--text-light); margin-bottom: 20px; font-size: 0.95rem;">Collaborate with your fellow travelers by sharing photos and videos.</p>
-                    <a href="trip_gallery.php?id=<?php echo $trip_id; ?>#upload" class="btn btn-primary" style="padding: 12px 30px;"><i class="ri-upload-cloud-2-line"></i> Upload Photos</a>
+                    <a href="trip_gallery.php?id=<?php echo $trip_id; ?>#upload" class="btn-primary" style="padding: 12px 30px; text-decoration: none;"><i class="ri-upload-cloud-2-line"></i> Upload Photos</a>
                 </div>
             </div>
 
@@ -276,13 +305,13 @@ endif; ?>
 
     <!-- RIGHT COLUMN (SIDEBAR) -->
     <div>
-        <div style="background: var(--white); padding: 35px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); position: sticky; top: 100px; border: 1px solid #edf2f7;">
-            <div style="text-align: center; margin-bottom: 30px; padding-bottom: 25px; border-bottom: 1px solid #edf2f7;">
-                <span class="badge <?php echo($trip['status'] == 'active') ? 'badge-green' : (($trip['status'] == 'completed') ? 'badge-purple' : 'badge-gray'); ?>" style="font-size: 0.9rem; padding: 6px 18px; margin-bottom: 15px;">
+        <div style="background: var(--white); padding: 35px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); position: sticky; top: 100px; border: 1px solid #f1f5f9;">
+            <div style="text-align: center; margin-bottom: 30px; padding-bottom: 25px; border-bottom: 1px dashed #e2e8f0;">
+                <span class="badge <?php echo($trip['status'] == 'active') ? 'badge-green' : (($trip['status'] == 'completed') ? 'badge-purple' : 'badge-gray'); ?>" style="font-size: 0.9rem; padding: 6px 18px; margin-bottom: 15px; display: inline-block;">
                     <i class="ri-checkbox-blank-circle-fill" style="font-size: 0.5rem; vertical-align: middle; margin-right: 5px;"></i> <?php echo strtoupper($trip['status']); ?>
                 </span>
-                <div style="font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px;">Price per person</div>
-                <div style="font-size: 3rem; font-weight: 800; color: var(--secondary-color);">$<?php echo number_format($trip['cost']); ?></div>
+                <div style="font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; font-weight: 700;">Price per person</div>
+                <div style="font-size: 3.2rem; font-weight: 800; color: var(--secondary-color); letter-spacing: -1px;">$<?php echo number_format($trip['cost']); ?></div>
             </div>
             
             <!-- Quick Stats -->

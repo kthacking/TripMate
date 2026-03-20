@@ -96,14 +96,107 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 <?php include 'header.php'; ?>
 
+<style>
+/* ── Theme Definitions ── */
+:root {
+    --primary-color: #ea580c;
+    --primary-hover: #c2410c;
+    --secondary-color: #1e293b;
+    --text-color: #334155;
+    --text-light: #64748b;
+    --bg-light: #f8fafc;
+    --white: #ffffff;
+    --shadow-sm: 0 4px 6px rgba(0,0,0,0.05);
+    --shadow-md: 0 10px 25px rgba(0,0,0,0.08);
+    --radius-sm: 12px;
+    --radius-md: 20px;
+    --radius-lg: 30px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.section {
+    background: linear-gradient(135deg, #fffaf5 0%, #ffffff 100%);
+    min-height: calc(100vh - 80px);
+}
+
+.auth-card {
+    background: var(--white);
+    border-radius: 24px;
+    box-shadow: var(--shadow-md);
+    padding: 40px;
+    border: 1px solid rgba(234, 88, 12, 0.1);
+}
+
+.form-control, .form-select {
+    border-radius: 14px;
+    border: 2px solid #edf2f7;
+    padding: 14px;
+    transition: var(--transition);
+    background: #f8fafc;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.1);
+}
+
+.form-label {
+    font-weight: 700;
+    color: var(--secondary-color);
+    font-size: 0.95rem;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3);
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4);
+}
+
+.btn-outline {
+    background: white;
+    border: 2px solid #e2e8f0;
+    color: var(--secondary-color);
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 800;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.btn-outline:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: #fffaf5;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+</style>
+
 <div class="container section">
     <div style="max-width: 900px; margin: 0 auto;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px;">
-            <h1>Edit Trip</h1>
-            <a href="trip.php?id=<?php echo $trip_id; ?>" class="btn btn-outline">View Trip</a>
+            <h1 style="color: var(--secondary-color); font-weight: 800; font-size: 2.2rem; letter-spacing: -0.5px; margin: 0;">Edit Trip</h1>
+            <a href="trip.php?id=<?php echo $trip_id; ?>" class="btn-outline"><i class="ri-eye-line" style="margin-right: 6px;"></i> View Trip</a>
         </div>
         
-        <?php if(isset($error)) echo "<p style='color:red'>$error</p>"; ?>
+        <?php if(isset($error)) echo "<p style='color:#dc2626; padding: 15px; background: #fef2f2; border-radius: 12px; font-weight: 600; border: 1px solid #fecaca;'>$error</p>"; ?>
 
         <div class="auth-card" style="max-width: 100%; text-align: left;">
             <form method="POST" action="">

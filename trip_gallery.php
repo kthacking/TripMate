@@ -93,6 +93,42 @@ if (isset($_POST['delete_media']) && ($role == 'admin' || $role == 'tripmaker' |
 include 'header.php';
 ?>
 
+<style>
+/* ── Theme Definitions ── */
+:root {
+    --primary-color: #ea580c;
+    --primary-hover: #c2410c;
+    --secondary-color: #1e293b;
+    --text-color: #334155;
+    --text-light: #64748b;
+    --bg-light: #f8fafc;
+    --white: #ffffff;
+    --shadow-sm: 0 4px 6px rgba(0,0,0,0.05);
+    --shadow-md: 0 10px 25px rgba(0,0,0,0.08);
+    --radius-sm: 12px;
+    --radius-md: 20px;
+    --radius-lg: 30px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.section { background: linear-gradient(135deg, #fffaf5 0%, #ffffff 100%); min-height: calc(100vh - 80px); }
+.btn-primary { background: var(--primary-color); color: var(--white); border-radius: 50px; font-weight: 800; border: none; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3); padding: 10px 20px; display: inline-block; }
+.btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4); }
+.btn-outline { background: white; border: 2px solid #e2e8f0; color: var(--secondary-color); border-radius: 50px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; transition: var(--transition); cursor: pointer; padding: 8px 16px;}
+.btn-outline:hover { border-color: var(--primary-color); color: var(--primary-color); background: #fffaf5; transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.btn-icon { background: white; border: 2px solid #e2e8f0; border-radius: 50%; width: 40px; height: 40px; display: inline-flex; justify-content: center; align-items: center; cursor: pointer; transition: var(--transition); color: var(--secondary-color); }
+.btn-icon:hover { background: #fffaf5; border-color: var(--primary-color); color: var(--primary-color); box-shadow: 0 4px 10px rgba(234,88,12,0.15); transform: translateY(-2px); }
+.gallery-filter-btn { padding: 8px 20px; border-radius: 50px; border: 2px solid transparent; background: transparent; font-weight: 700; color: var(--text-light); cursor: pointer; transition: var(--transition); font-size: 0.95rem; }
+.gallery-filter-btn:hover { color: var(--secondary-color); background: #f1f5f9; }
+.gallery-filter-btn.active { background: var(--secondary-color); color: white; box-shadow: var(--shadow-sm); }
+.masonry-media-wrapper { border-radius: var(--radius-md); overflow: hidden; position: relative; border: 1px solid rgba(0,0,0,0.05); }
+.masonry-item img, .masonry-stub { transition: transform 0.4s; }
+.masonry-item:hover img, .masonry-item:hover .masonry-stub { transform: scale(1.05); }
+.masonry-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); opacity: 0; transition: opacity 0.3s; display: flex; flex-direction: column; justify-content: space-between; padding: 15px; }
+.masonry-item:hover .masonry-overlay { opacity: 1; }
+.action-btn-mini { background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); border-radius: 50%; color: white; width: 35px; height: 35px; display: inline-flex; justify-content: center; align-items: center; transition: var(--transition); text-decoration: none; border: 1px solid rgba(255,255,255,0.3); }
+.action-btn-mini:hover { background: var(--primary-color); border-color: var(--primary-color); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(234,88,12,0.4); }
+</style>
+
 <div class="container section">
     
     <!-- Header -->
@@ -124,7 +160,7 @@ include 'header.php';
                 <?php if($role == 'admin' || $trip['created_by'] == $user_id): ?>
                     <button class="btn-icon danger" onclick="deleteSelected()" title="Delete"><i class="ri-delete-bin-line"></i></button>
                 <?php endif; ?>
-                <button class="btn btn-primary" onclick="document.getElementById('uploadModal').style.display='flex'">+ Upload</button>
+                <button class="btn-primary" onclick="document.getElementById('uploadModal').style.display='flex'"><i class="ri-upload-line" style="margin-right:4px;"></i> Upload</button>
              </div>
         </div>
     </div>
@@ -138,18 +174,18 @@ include 'header.php';
             </div>
             <form method="POST" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label class="form-label">Select Files (Max 50MB each)</label>
-                    <input type="file" name="media_file[]" class="form-control" multiple required>
+                    <label class="form-label" style="font-weight:700; color:var(--secondary-color);">Select Files (Max 50MB each)</label>
+                    <input type="file" name="media_file[]" class="form-control" multiple required style="border-radius:12px; border:2px solid #edf2f7; padding:12px; width:100%; box-sizing:border-box;">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Type</label>
-                    <select name="media_type" class="form-select">
+                <div class="form-group" style="margin-top:15px; margin-bottom: 20px;">
+                    <label class="form-label" style="font-weight:700; color:var(--secondary-color);">Type</label>
+                    <select name="media_type" class="form-select" style="border-radius:12px; border:2px solid #edf2f7; padding:12px; width:100%; box-sizing:border-box;">
                         <option value="image">Photo</option>
                         <option value="video">Video</option>
                         <option value="document">Document</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Upload</button>
+                <button type="submit" class="btn-primary" style="width: 100%;">Upload Files</button>
             </form>
         </div>
     </div>
@@ -233,13 +269,13 @@ include 'header.php';
     <!-- Download Choice Modal -->
     <div id="dlModal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2100; align-items:center; justify-content:center;">
         <div style="background: white; padding: 24px; border-radius: 16px; width: 320px; text-align: center;">
-            <h3 style="margin-bottom: 16px;">Download Options</h3>
-            <p style="color: var(--text-light); margin-bottom: 24px;">You have selected <span id="dlCount">0</span> files.</p>
+            <h3 style="margin-bottom: 16px; color: var(--secondary-color); font-weight:800;">Download Options</h3>
+            <p style="color: var(--text-light); margin-bottom: 24px;">You have selected <span id="dlCount" style="font-weight:800; color:var(--primary-color);">0</span> files.</p>
             <div style="display: grid; gap: 12px;">
-                <button onclick="processDownload('individual')" class="btn btn-outline" style="width: 100%;">Download Individually</button>
-                <button onclick="processDownload('zip')" class="btn btn-primary" style="width: 100%;">Download as ZIP</button>
+                <button onclick="processDownload('individual')" class="btn-outline" style="width: 100%; box-sizing:border-box;">Download Individually</button>
+                <button onclick="processDownload('zip')" class="btn-primary" style="width: 100%; box-sizing:border-box;">Download as ZIP</button>
             </div>
-            <button onclick="document.getElementById('dlModal').style.display='none'" style="margin-top: 16px; background: none; border: none; color: var(--text-light); cursor: pointer; text-decoration: underline;">Cancel</button>
+            <button onclick="document.getElementById('dlModal').style.display='none'" style="margin-top: 20px; background: none; border: none; color: var(--text-light); cursor: pointer; font-weight:700;">Cancel</button>
         </div>
     </div>
 

@@ -91,7 +91,7 @@ endif; ?>
                             <div class="notif-body">
                                 <!-- Pending Requests Section -->
                                 <?php if (count($pending_reqs) > 0): ?>
-                                    <div style="padding: 8px 16px; background: #ebf8ff; font-size: 0.75rem; font-weight: 700; color: #2c5282;">JOIN REQUESTS</div>
+                                    <div style="padding: 8px 16px; background: #fffaf5; font-size: 0.75rem; font-weight: 800; color: var(--primary-color);">JOIN REQUESTS</div>
                                     <?php foreach ($pending_reqs as $pr): ?>
                                         <div class="req-card-mini">
                                             <div class="req-info">
@@ -114,11 +114,11 @@ endif; ?>
 
                                 <!-- Regular Notifications -->
                                 <?php if (count($notifs) > 0): ?>
-                                    <div style="padding: 8px 16px; background: #f7fafc; font-size: 0.75rem; font-weight: 700; color: var(--text-light); border-top: 1px solid #edf2f7; border-bottom: 1px solid #edf2f7;">ALERTS</div>
+                                    <div style="padding: 8px 16px; background: #f8fafc; font-size: 0.75rem; font-weight: 800; color: var(--text-light); border-top: 1px solid #edf2f7; border-bottom: 1px solid #edf2f7;">ALERTS</div>
                                     <?php foreach ($notifs as $nt): ?>
-                                        <a href="actions.php?action=read_notif&notif_id=<?php echo $nt['id']; ?>&link=<?php echo urlencode($nt['link']); ?>" style="display: block; padding: 12px 16px; border-bottom: 1px solid #edf2f7; color: inherit; transition: bg 0.2s;" onmouseover="this.style.background='#f9f9f9'" onmouseout="this.style.background='transparent'">
-                                            <div style="font-size: 0.9rem;"><?php echo htmlspecialchars($nt['message']); ?></div>
-                                            <div style="font-size: 0.7rem; color: var(--text-light); margin-top: 4px;"><?php echo date('M d, H:i', strtotime($nt['created_at'])); ?></div>
+                                        <a href="actions.php?action=read_notif&notif_id=<?php echo $nt['id']; ?>&link=<?php echo urlencode($nt['link']); ?>" style="display: block; padding: 12px 16px; border-bottom: 1px solid #edf2f7; color: inherit; transition: bg 0.2s;" onmouseover="this.style.background='#fffaf5'" onmouseout="this.style.background='transparent'">
+                                            <div style="font-size: 0.9rem; font-weight: 500; color: var(--secondary-color);"><?php echo htmlspecialchars($nt['message']); ?></div>
+                                            <div style="font-size: 0.7rem; color: var(--text-light); margin-top: 4px;"><i class="ri-time-line" style="vertical-align: middle;"></i> <?php echo date('M d, H:i', strtotime($nt['created_at'])); ?></div>
                                         </a>
                                     <?php
         endforeach; ?>
@@ -127,7 +127,7 @@ endif; ?>
 
                                 <?php if ($total_count == 0): ?>
                                     <div style="padding: 40px; text-align: center; color: var(--text-light);">
-                                        <i class="ri-notification-off-line" style="font-size: 2rem; margin-bottom: 8px; display: block;"></i>
+                                        <i class="ri-notification-off-line" style="font-size: 2.5rem; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
                                         No new notifications
                                     </div>
                                 <?php
@@ -136,8 +136,8 @@ endif; ?>
                         </div>
                     </div>
 
-                    <span style="font-weight: 500; color: var(--text-color);">Hi, <?php echo htmlspecialchars($_SESSION['name']); ?></span>
-                    <a href="logout.php" class="btn btn-outline" style="border:none; padding: 8px 16px;">Logout</a>
+                    <span style="font-weight: 700; color: var(--text-color);">Hi, <?php echo htmlspecialchars($_SESSION['name']); ?></span>
+                    <a href="logout.php" class="btn" style="border: 2px solid #e2e8f0; padding: 8px 16px; border-radius: 12px; background: white; font-weight: 700;">Logout</a>
                 
                 <?php
 else: ?>
@@ -153,7 +153,7 @@ else: ?>
                             </div>
                             <div style="padding: 20px;">
                                 <?php if (isset($_SESSION['admin_login_error'])): ?>
-                                    <div style="background: #fff5f5; color: #c53030; padding: 10px; border-radius: 8px; font-size: 0.8rem; margin-bottom: 15px; border: 1px solid #feb2b2; display: flex; align-items: center; gap: 8px;">
+                                    <div style="background: #fef2f2; color: #dc2626; padding: 10px; border-radius: 8px; font-size: 0.8rem; margin-bottom: 15px; border: 1px solid #fecaca; display: flex; align-items: center; gap: 8px;">
                                         <i class="ri-error-warning-fill"></i>
                                         <?php
         echo $_SESSION['admin_login_error'];
@@ -170,14 +170,14 @@ else: ?>
                                     <div class="form-group" style="margin-bottom: 15px;">
                                         <input type="password" name="password" class="form-control" placeholder="Admin Password" required style="padding: 10px; font-size: 0.85rem; border-radius: 8px;">
                                     </div>
-                                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 0.85rem; border-radius: 8px;">Authenticate</button>
+                                    <button type="submit" class="btn" style="width: 100%; padding: 10px; font-size: 0.85rem; border-radius: 8px; background: var(--secondary-color); color: white; border: none; font-weight: 700;">Authenticate</button>
                                 </form>
                             </div>
                         </div>
                     </div>
                     <div style="width: 1px; height: 20px; background: #e2e8f0; margin: 0 5px;"></div>
-                    <a href="login.php" class="btn btn-outline">Log In</a>
-                    <a href="register.php" class="btn btn-primary">Register</a>
+                    <a href="login.php" class="btn" style="border: 2px solid #e2e8f0; padding: 8px 16px; border-radius: 12px; background: white; font-weight: 700;">Log In</a>
+                    <a href="register.php" class="btn btn-primary" style="padding: 10px 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(234,88,12,0.3);">Register</a>
                 <?php
 endif; ?>
             </div>
@@ -221,3 +221,5 @@ endif; ?>
     </nav>
     <!-- Content padding for fixed navbar -->
     <div style="height: 65px;"></div>
+</body>
+</html>
