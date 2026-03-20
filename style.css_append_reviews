@@ -1,0 +1,22 @@
+/* Review Form Star Alignment override if needed */
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end; /* Align stars to the left visually */
+    gap: 4px;
+}
+/* Ensure the stars flow correctly for selection */
+.star-rating input {
+    display: none;
+}
+.star-rating label {
+    font-size: 1.5rem;
+    color: #cbd5e0;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #F6E05E; 
+}

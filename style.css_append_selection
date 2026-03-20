@@ -1,0 +1,15 @@
+
+/* Selection Mode Visuals */
+.selection-mode .masonry-item {
+    cursor: pointer;
+}
+.selection-mode .masonry-overlay {
+    opacity: 1 !important;
+    background: rgba(0,0,0,0.1); 
+}
+.selection-mode .masonry-actions {
+    display: none; 
+}
+.selection-mode .masonry-checkbox {
+    transform: scale(1.2);
+}
