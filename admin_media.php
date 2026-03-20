@@ -126,6 +126,7 @@ $storage_mb = round($storage_bytes / 1048576, 2);
                                     </div>
                                 <?php endif; ?>
                             </div>
+                            
                             <div style="overflow: hidden;">
                                 <div style="font-weight: 700; color: var(--admin-text-main); font-size: 0.9rem; white-space: nowrap; text-overflow: ellipsis; max-width: 250px;">
                                     <?php echo basename($m['file_path']); ?>
