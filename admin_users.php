@@ -36,176 +36,586 @@ if ($role_filter)
 $users = $conn->query("SELECT * FROM users WHERE $where ORDER BY created_at DESC");
 ?>
 
-<div
-    style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; gap: 15px; flex-wrap: wrap;">
-    <div style="flex: 1; min-width: 300px;">
-        <form method="GET" style="display: flex; gap: 12px; align-items: center;">
-            <div style="position: relative; flex: 1;">
-                <i class="ri-search-2-line"
-                    style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94A3B8; font-size: 1rem;"></i>
+<style>
+    /* Hide Default Navbar and Header */
+    .admin-nav, .admin-content > h2, .admin-content > div:first-child {
+        display: none !important;
+    }
+
+    body {
+        background-color: #F8F9FA;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* Geometric Background */
+    .geo-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+        background: radial-gradient(circle at 10% 20%, rgba(243, 232, 255, 0.5) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(220, 252, 231, 0.5) 0%, transparent 40%),
+                    radial-gradient(circle at 50% 50%, rgba(255, 237, 213, 0.4) 0%, transparent 60%);
+    }
+
+    .geo-bg::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+        background-size: 50px 50px;
+    }
+
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .page-header {
+        margin-bottom: 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        animation: fadeInDown 0.8s ease-out;
+    }
+
+    .header-text h1 {
+        font-size: 2.8rem;
+        font-weight: 900;
+        letter-spacing: -1.5px;
+        color: #1E293B;
+        margin: 0 0 10px 0;
+    }
+
+    .header-text p {
+        font-size: 1.1rem;
+        color: #64748B;
+        margin: 0;
+        font-weight: 500;
+    }
+
+    .btn-modern {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: white;
+        padding: 12px 24px;
+        border-radius: 12px;
+        text-decoration: none;
+        color: var(--admin-primary);
+        font-weight: 700;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid #F1F5F9;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        background: #F8FAFC;
+    }
+
+    .btn-modern::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(var(--admin-primary-rgb), 0.2);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1, 1) translate(-50%);
+        transform-origin: 50% 50%;
+    }
+
+    @keyframes ripple {
+        0% { transform: scale(0, 0); opacity: 1; }
+        20% { transform: scale(25, 25); opacity: 1; }
+        100% { opacity: 0; transform: scale(40, 40); }
+    }
+
+    .btn-modern:focus:not(:active)::after {
+        animation: ripple 1s ease-out;
+    }
+
+    /* Filter Card */
+    .filter-section {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        padding: 25px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        margin-bottom: 40px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        animation: fadeIn 0.8s ease-out 0.2s both;
+    }
+
+    .search-row {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .search-input-wrapper i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94A3B8;
+        font-size: 1.1rem;
+    }
+
+    .modern-input {
+        width: 100%;
+        height: 48px;
+        padding-left: 48px;
+        padding-right: 20px;
+        border-radius: 14px;
+        border: 1px solid #E2E8F0;
+        background: white;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        color: #1E293B;
+    }
+
+    .modern-input:focus {
+        border-color: var(--admin-primary);
+        box-shadow: 0 0 0 4px rgba(var(--admin-primary-rgb), 0.1);
+        outline: none;
+    }
+
+    .modern-select {
+        height: 48px;
+        padding: 0 20px;
+        border-radius: 14px;
+        border: 1px solid #E2E8F0;
+        background: white;
+        font-weight: 600;
+        color: #475569;
+        font-size: 0.9rem;
+        min-width: 160px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .modern-select:focus {
+        border-color: var(--admin-primary);
+        box-shadow: 0 0 0 4px rgba(var(--admin-primary-rgb), 0.1);
+        outline: none;
+    }
+
+    .btn-filter {
+        height: 48px;
+        padding: 0 25px;
+        border-radius: 14px;
+        background: var(--admin-primary);
+        color: white;
+        border: none;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(var(--admin-primary-rgb), 0.3);
+        filter: brightness(1.1);
+    }
+
+    /* User Grid */
+    .user-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+        animation: fadeIn 0.8s ease-out 0.4s both;
+    }
+
+    .user-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 24px;
+        padding: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .user-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.4);
+        z-index: 50;
+    }
+
+    .user-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        background: transparent;
+        transition: all 0.3s ease;
+    }
+
+    .card-role-admin::before { background: linear-gradient(90deg, #9333EA, #C084FC); }
+    .card-role-tripmaker::before { background: linear-gradient(90deg, #EA580C, #FB923C); }
+    .card-role-student::before { background: linear-gradient(90deg, #2563EB, #60A5FA); }
+
+    .user-info-section {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    .user-avatar {
+        width: 65px;
+        height: 65px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .avatar-admin { background: linear-gradient(135deg, #9333EA, #7C3AED); }
+    .avatar-tripmaker { background: linear-gradient(135deg, #EA580C, #D97706); }
+    .avatar-student { background: linear-gradient(135deg, #2563EB, #1D4ED8); }
+
+    .user-main-info {
+        flex: 1;
+    }
+
+    .user-name {
+        font-size: 1.25rem;
+        font-weight: 850;
+        color: #1E293B;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+
+    .user-email {
+        font-size: 0.9rem;
+        color: #64748B;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .card-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 20px;
+        border-top: 1px solid rgba(0,0,0,0.05);
+        margin-top: auto;
+    }
+
+    .meta-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .meta-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 800;
+        color: #94A3B8;
+    }
+
+    .meta-value {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #334155;
+    }
+
+    .badge-pill {
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .badge-admin { background: #F3E8FF; color: #9333EA; border: 1px solid #E9D5FF; }
+    .badge-tripmaker { background: #FFEDD5; color: #EA580C; border: 1px solid #FED7AA; }
+    .badge-student { background: #DBEAFE; color: #2563EB; border: 1px solid #BFDBFE; }
+    .badge-active { background: #DCFCE7; color: #16A34A; border: 1px solid #BBF7D0; }
+    .badge-suspended { background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; }
+
+    .card-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .action-btn {
+        flex: 1;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+        gap: 8px;
+    }
+
+    .btn-suspend { background: #F8FAFC; color: #475569; border-color: #E2E8F0; }
+    .btn-suspend:hover { background: #F1F5F9; border-color: #CBD5E1; color: #1E293B; }
+    .btn-delete { background: #FEF2F2; color: #EF4444; border-color: #FEE2E2; }
+    .btn-delete:hover { background: #FEE2E2; border-color: #FECACA; transform: scale(1.02); }
+
+    .role-trigger {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .role-trigger:hover {
+        transform: scale(1.05);
+        filter: brightness(0.95);
+    }
+
+    /* Dropdown UI */
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        background: white;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        border-radius: 16px;
+        z-index: 100;
+        min-width: 180px;
+        padding: 10px;
+        border: 1px solid rgba(0,0,0,0.05);
+        left: 0;
+        top: 100%;
+        margin-top: 10px;
+        animation: slideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dropdown-menu.show { display: block !important; }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 15px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        color: #475569;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+    }
+
+    .dropdown-item:hover {
+        background: #F1F5F9;
+        color: var(--admin-primary);
+        transform: translateX(5px);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInUp {
+        from { opacity: 0; transform: translateY(10px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @media (max-width: 768px) {
+        .page-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+        .header-text h1 { font-size: 2.2rem; }
+        .user-grid { grid-template-columns: 1fr; }
+        .search-row { flex-direction: column; align-items: stretch; }
+    }
+
+    .admin-content { padding: 0 !important; max-width: none !important; }
+</style>
+
+<div class="geo-bg"></div>
+
+<div class="dashboard-container">
+    <div class="page-header">
+        <div class="header-text">
+            <h1>User Directory</h1>
+            <p>Manage community members, roles, and platform permissions</p>
+        </div>
+        <a href="admin_reg.php" class="btn-modern">
+            <i class="ri-user-add-line"></i> Provision New Admin
+        </a>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <form method="GET" class="search-row">
+            <div class="search-input-wrapper">
+                <i class="ri-search-2-line"></i>
                 <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>"
-                    placeholder="Search by name or email..." class="form-control"
-                    style="padding-left: 40px; height: 42px; border-radius: 12px; border: 1px solid var(--admin-border); background: white; width: 100%; font-weight: 500; font-size: 0.9rem;">
+                    placeholder="Search by name, email, or ID..." class="modern-input">
             </div>
-            <select name="role" class="form-select"
-                style="width: 150px; height: 42px; border-radius: 12px; border: 1px solid var(--admin-border); background: white; font-weight: 600; color: #475569; font-size: 0.85rem;"
-                onchange="this.form.submit()">
-                <option value="">All Roles</option>
-                <option value="admin" <?php if ($role_filter == 'admin')
-                    echo 'selected'; ?>>Admin</option>
-                <option value="tripmaker" <?php if ($role_filter == 'tripmaker')
-                    echo 'selected'; ?>>TripMaker</option>
-                <option value="student" <?php if ($role_filter == 'student')
-                    echo 'selected'; ?>>Student</option>
+            <select name="role" class="modern-select" onchange="this.form.submit()">
+                <option value="">All Account Roles</option>
+                <option value="admin" <?php if ($role_filter == 'admin') echo 'selected'; ?>>Administrators</option>
+                <option value="tripmaker" <?php if ($role_filter == 'tripmaker') echo 'selected'; ?>>TripMakers</option>
+                <option value="student" <?php if ($role_filter == 'student') echo 'selected'; ?>>Students</option>
             </select>
-            <button type="submit" class="btn-premium" style="height: 42px; padding: 0 20px; font-size: 0.85rem;">
-                <i class="ri-filter-3-line"></i> Filter
+            <button type="submit" class="btn-filter">
+                <i class="ri-equalizer-line"></i> Sync View
             </button>
         </form>
     </div>
-    <a href="admin_reg.php" class="btn-premium"
-        style="background: white; color: var(--admin-primary); border: 2px solid var(--admin-primary); box-shadow: none; height: 42px; padding: 0 20px; font-size: 0.85rem;">
-        <i class="ri-user-add-line"></i> New Admin
-    </a>
-</div>
 
-<div class="admin-card" style="padding: 0; overflow: hidden;">
-    <table class="admin-table" style="width: 100%;">
-        <thead>
-            <tr>
-                <th style="width: 50px;"><input type="checkbox" onchange="toggleSelectAll(this)"
-                        style="width: 18px; height: 18px;"></th>
-                <th>Users Details</th>
-                <th>Account Role</th>
-                <th>Status</th>
-                <th>Joined Date</th>
-                <th style="text-align: right;">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php while ($u = $users->fetch_assoc()): ?>
-                <tr style="transition: background 0.2s;">
-                    <td><input type="checkbox" class="admin-checkbox" onchange="updateBulkBar()"
-                            style="width: 18px; height: 18px;"></td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div
-                                style="width: 36px; height: 36px; border-radius: 10px; background: #F1F5F9; color: var(--admin-primary); display: flex; align-items: center; justify-content: center; font-weight: 800; border: 1px solid #E2E8F0; font-size: 0.85rem;">
-                                <?php echo strtoupper(substr($u['name'], 0, 1)); ?>
-                            </div>
-                            <div>
-                                <div style="font-weight: 800; color: var(--admin-text-main); font-size: 0.92rem;">
-                                    <?php echo htmlspecialchars($u['name']); ?></div>
-                                <div style="font-size: 0.78rem; color: var(--admin-text-muted); font-weight: 500;">
-                                    <?php echo htmlspecialchars($u['email']); ?></div>
+    <!-- User Grid -->
+    <div class="user-grid">
+        <?php if ($users->num_rows > 0): while ($u = $users->fetch_assoc()): 
+            $role_class = 'card-role-' . $u['role'];
+            $avatar_class = 'avatar-' . $u['role'];
+            $badge_class = 'badge-' . $u['role'];
+            $status_class = $u['is_active'] ? 'badge-active' : 'badge-suspended';
+        ?>
+            <div class="user-card <?php echo $role_class; ?>">
+                <div>
+                    <div class="user-info-section">
+                        <div class="user-avatar <?php echo $avatar_class; ?>">
+                            <?php echo strtoupper(substr($u['name'], 0, 1)); ?>
+                        </div>
+                        <div class="user-main-info">
+                            <h3 class="user-name"><?php echo htmlspecialchars($u['name']); ?></h3>
+                            <div class="user-email">
+                                <i class="ri-mail-line"></i> <?php echo htmlspecialchars($u['email']); ?>
                             </div>
                         </div>
-                    </td>
-                    <td>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                         <div class="dropdown" style="position: relative;">
-                            <button class="admin-badge"
-                                style="background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; cursor: pointer; display: flex; align-items: center; gap: 6px;"
-                                onclick="this.nextElementSibling.classList.toggle('show')">
-                                <?php echo strtoupper($u['role']); ?> <i class="ri-arrow-down-s-line"></i>
-                            </button>
-                            <div class="dropdown-menu"
-                                style="display: none; position: absolute; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; z-index: 100; min-width: 150px; padding: 8px; border: 1px solid #E2E8F0; left: 0; top: 100%; margin-top: 5px;">
-                                <a href="?action=change_role&uid=<?php echo $u['id']; ?>&role=admin" class="dropdown-item"
-                                    style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; font-size: 0.85rem; text-decoration: none; color: #475569; font-weight: 600; border-radius: 8px;">
-                                    <i class="ri-shield-user-line"></i> Admin
+                            <span class="badge-pill <?php echo $badge_class; ?> role-trigger" onclick="toggleDropdown(this, event)">
+                                <i class="<?php 
+                                    echo $u['role'] == 'admin' ? 'ri-shield-user-line' : 
+                                        ($u['role'] == 'tripmaker' ? 'ri-briefcase-line' : 'ri-graduation-cap-line'); 
+                                ?>"></i>
+                                <?php echo strtoupper($u['role']); ?>
+                                <i class="ri-arrow-down-s-line"></i>
+                            </span>
+                            <div class="dropdown-menu">
+                                <a href="?action=change_role&uid=<?php echo $u['id']; ?>&role=admin" class="dropdown-item">
+                                    <i class="ri-shield-user-line"></i> Promote to Admin
                                 </a>
-                                <a href="?action=change_role&uid=<?php echo $u['id']; ?>&role=tripmaker"
-                                    class="dropdown-item"
-                                    style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; font-size: 0.85rem; text-decoration: none; color: #475569; font-weight: 600; border-radius: 8px;">
-                                    <i class="ri-briefcase-line"></i> TripMaker
+                                <a href="?action=change_role&uid=<?php echo $u['id']; ?>&role=tripmaker" class="dropdown-item">
+                                    <i class="ri-briefcase-line"></i> Set as TripMaker
                                 </a>
-                                <a href="?action=change_role&uid=<?php echo $u['id']; ?>&role=student" class="dropdown-item"
-                                    style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; font-size: 0.85rem; text-decoration: none; color: #475569; font-weight: 600; border-radius: 8px;">
-                                    <i class="ri-graduation-cap-line"></i> Student
+                                <a href="?action=change_role&uid=<?php echo $u['id']; ?>&role=student" class="dropdown-item">
+                                    <i class="ri-graduation-cap-line"></i> Demote to Student
                                 </a>
                             </div>
                         </div>
-                    </td>
-                    <td>
-                        <?php if ($u['is_active']): ?>
-                            <span class="admin-badge"
-                                style="background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0;">Active</span>
-                        <?php else: ?>
-                            <span class="admin-badge"
-                                style="background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA;">Suspended</span>
-                        <?php endif; ?>
-                    </td>
-                    <td><span
-                            style="font-size: 0.9rem; color: #64748B; font-weight: 600;"><?php echo date('M d, Y', strtotime($u['created_at'])); ?></span>
-                    </td>
-                    <td>
-                        <div style="display: flex; gap: 8px; justify-content: flex-end;">
-                            <a href="?action=toggle_status&uid=<?php echo $u['id']; ?>" class="btn-icon"
-                                title="<?php echo $u['is_active'] ? 'Suspend User' : 'Restore User'; ?>"
-                                style="background: #F8FAFC; color: #475569; border: 1px solid #E2E8F0; width: 38px; height: 38px;">
-                                <i class="<?php echo $u['is_active'] ? 'ri-user-forbid-line' : 'ri-user-follow-line'; ?>"
-                                    style="font-size: 1.1rem;"></i>
-                            </a>
-                            <a href="?action=delete&uid=<?php echo $u['id']; ?>" class="btn-icon"
-                                onclick="return confirm('Danger: Table records for this user will be purged. Proceed?')"
-                                style="background: #FFF1F2; color: #E11D48; border: 1px solid #FECDD3; width: 38px; height: 38px;">
-                                <i class="ri-delete-bin-6-line" style="font-size: 1.1rem;"></i>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-        </tbody>
-    </table>
-</div>
+                        <span class="badge-pill <?php echo $status_class; ?>">
+                            <i class="ri-checkbox-circle-line"></i>
+                            <?php echo $u['is_active'] ? 'Active' : 'Suspended'; ?>
+                        </span>
+                    </div>
+                </div>
 
-<div id="bulkBar" class="bulk-actions"
-    style="display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 2000; box-shadow: var(--shadow-lg);">
-    <span id="selectedCount" style="margin-right: 20px; font-weight: 600;">0 items selected</span>
-    <button class="btn btn-mini btn-mini-reject"
-        style="background: #EF4444; color: white; border: none; padding: 8px 16px; border-radius: 8px;">Suspend
-        Selected</button>
-    <button class="btn btn-mini"
-        style="background: #F3F4F6; color: #374151; padding: 8px 16px; border-radius: 8px;">Change Role</button>
-    <button class="btn btn-mini" onclick="this.parentElement.style.display='none'"
-        style="background: transparent; color: #6B7280; padding: 8px; border: none;"><i
-            class="ri-close-line"></i></button>
+                <div class="card-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Joined</span>
+                        <span class="meta-value"><?php echo date('M d, Y', strtotime($u['created_at'])); ?></span>
+                    </div>
+                    <div class="meta-item" style="text-align: right;">
+                        <span class="meta-label">Identifier</span>
+                        <span class="meta-value">#USR-<?php echo str_pad($u['id'], 4, '0', STR_PAD_LEFT); ?></span>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <a href="?action=toggle_status&uid=<?php echo $u['id']; ?>" class="action-btn btn-suspend" 
+                       title="<?php echo $u['is_active'] ? 'Suspend access' : 'Restore access'; ?>">
+                        <i class="<?php echo $u['is_active'] ? 'ri-user-forbid-line' : 'ri-user-follow-line'; ?>"></i>
+                        <?php echo $u['is_active'] ? 'Suspend' : 'Activate'; ?>
+                    </a>
+                    <?php if ($u['id'] != $_SESSION['user_id']): ?>
+                    <a href="?action=delete&uid=<?php echo $u['id']; ?>" class="action-btn btn-delete" 
+                       onclick="return confirm('Security Check: This will permanently purge all user data. Continue?')">
+                        <i class="ri-delete-bin-6-line"></i> Delete
+                    </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endwhile; else: ?>
+            <div style="grid-column: 1/-1; text-align: center; padding: 100px; color: #94A3B8;">
+                <i class="ri-user-search-line" style="font-size: 4rem; display: block; margin-bottom: 20px;"></i>
+                <h2 style="font-weight: 800; color: #64748B;">No Users Found</h2>
+                <p>Try adjusting your search or filters to find what you're looking for.</p>
+            </div>
+        <?php endif; ?>
+    </div>
 </div>
 
 <script>
-    // Toggle Dropdowns
-    document.querySelectorAll('.dropdown button').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            document.querySelectorAll('.dropdown-menu').forEach(m => {
-                if (m !== this.nextElementSibling) m.classList.remove('show');
-            });
+    function toggleDropdown(el, e) {
+        e.stopPropagation();
+        const menu = el.nextElementSibling;
+        document.querySelectorAll('.dropdown-menu').forEach(m => {
+            if (m !== menu) m.classList.remove('show');
         });
-    });
+        menu.classList.toggle('show');
+    }
+
     document.addEventListener('click', () => {
         document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
     });
 </script>
-<style>
-    .dropdown-menu.show {
-        display: block !important;
-    }
-
-    .btn-icon {
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        text-decoration: none;
-        transition: all 0.2s;
-    }
-
-    .btn-icon:hover {
-        opacity: 0.8;
-        transform: scale(1.1);
-    }
-</style>
 
 <?php require_once 'admin_footer.php'; ?>
