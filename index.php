@@ -6,7 +6,7 @@ require_once 'db.php';
 
 // Dynamic Data Fetching
 $featured_trips = $conn->query("SELECT * FROM trips WHERE status='active' ORDER BY created_at DESC LIMIT 15");
-$destinations = $conn->query("SELECT destination, MIN(image_url) as image FROM trips WHERE status='active' AND image_url IS NOT NULL AND image_url != '' GROUP BY destination LIMIT 23");
+$destinations = $conn->query("SELECT destination, MIN(image_url) as image FROM trips WHERE status='active' AND image_url IS NOT NULL AND image_url != '' GROUP BY destination LIMIT 24");
 $media_gallery = $conn->query("SELECT file_path FROM media WHERE type='image' ORDER BY uploaded_at DESC LIMIT 6");
 $reviews = $conn->query("SELECT r.*, u.name as user_name FROM reviews r JOIN users u ON r.student_id = u.id ORDER BY r.created_at DESC LIMIT 3");
 ?>
@@ -107,14 +107,14 @@ $reviews = $conn->query("SELECT r.*, u.name as user_name FROM reviews r JOIN use
         .trip-price span { font-size: 0.85rem; color: var(--text-light); font-weight: 500; }
 
         /* Destinations Matrix */
-        .dest-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-        .dest-item { position: relative; height: 350px; border-radius: var(--radius-md); overflow: hidden; cursor: pointer; }
-        .dest-item:nth-child(2) { grid-column: span 2; }
-        .dest-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; }
-        .dest-item { box-shadow: inset 0 -80px 50px -20px rgba(0,0,0,0.6); }
-        .dest-item:hover img { transform: scale(1.1); }
-        .dest-info { position: absolute; bottom: 25px; left: 25px; color: var(--white); z-index: 2; }
-        .dest-info h3 { color: var(--white); font-size: 1.5rem; }
+        .dest-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; grid-auto-rows: 250px; grid-auto-flow: dense; }
+        .dest-item { position: relative; width: 100%; height: 100%; border-radius: var(--radius-md); overflow: hidden; cursor: pointer; }
+        .dest-item.dest-large { grid-column: span 2; grid-row: span 2; }
+        .dest-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); position: absolute; inset: 0; z-index: 1; }
+        .dest-item::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, transparent 100%); z-index: 2; pointer-events: none; }
+        .dest-item:hover img { transform: scale(1.08); }
+        .dest-info { position: absolute; bottom: 25px; left: 25px; color: var(--white); z-index: 3; }
+        .dest-info h3 { color: var(--white); font-size: 1.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin-bottom: 5px; }
 
         /* Why Choose Us */
         .feature-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
@@ -160,8 +160,8 @@ $reviews = $conn->query("SELECT r.*, u.name as user_name FROM reviews r JOIN use
         @media (max-width: 1024px) {
             .hero-container { grid-template-columns: 1fr; text-align: center; }
             .hero-text h1 { font-size: 3.5rem; }
-            .dest-grid { grid-template-columns: repeat(2, 1fr); }
-            .dest-item:nth-child(2) { grid-column: span 1; }
+            .dest-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 220px; }
+            .dest-item.dest-large { grid-column: span 2; grid-row: span 2; }
             .feature-grid, .review-grid { grid-template-columns: repeat(2, 1fr); }
             .footer-grid { grid-template-columns: 1fr 1fr; }
         }
@@ -169,6 +169,8 @@ $reviews = $conn->query("SELECT r.*, u.name as user_name FROM reviews r JOIN use
             .nav-links { display: none; }
             .hero-text h1 { font-size: 2.5rem; }
             .feature-grid, .review-grid, .gallery-grid, .dest-grid { grid-template-columns: 1fr; }
+            .dest-grid { grid-auto-rows: 300px; }
+            .dest-item.dest-large { grid-column: span 1; grid-row: span 1; }
             .footer-grid { grid-template-columns: 1fr; }
             .section { padding: 50px 0; }
         }
@@ -300,18 +302,25 @@ $reviews = $conn->query("SELECT r.*, u.name as user_name FROM reviews r JOIN use
             </div>
             <div class="dest-grid">
                 <?php if ($destinations && $destinations->num_rows > 0): 
+                    $dest_index = 0;
                     while ($dest = $destinations->fetch_assoc()): 
                         $fallback = 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80';
-                        $img = !empty($dest['image']) ? $dest['image'] : $faback;
+                        $img = !empty($dest['image']) ? $dest['image'] : $fallback;
+                        
+                        // Make some items larger (e.g. 1st and 4th of every 6 items)
+                        $is_large = ($dest_index % 6 == 0 || $dest_index % 6 == 3);
+                        $large_class = $is_large ? 'dest-large' : '';
                 ?>
-                    <div class="dest-item">
+                    <a href="popular_trips.php?search=<?php echo urlencode($dest['destination']); ?>" class="dest-item <?php echo $large_class; ?>" style="display: block; text-decoration: none;">
                         <img src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($dest['destination']); ?>" onerror="this.src='<?php echo $fallback; ?>'">
                         <div class="dest-info">
                             <h3><?php echo htmlspecialchars($dest['destination']); ?></h3>
-                            <span style="font-size: 0.9rem; font-weight: 600;"><i class="ri-map-pin-2-fill text-primary" style="color:var(--primary-color);"></i> Explore</span>
+                            <span style="font-size: 0.9rem; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.8); color: var(--white);"><i class="ri-map-pin-2-fill text-primary" style="color:var(--primary-color);"></i> Explore</span>
                         </div>
-                    </div>
-                <?php endwhile; else: ?>
+                    </a>
+                <?php 
+                        $dest_index++;
+                    endwhile; else: ?>
                     <p style="grid-column: 1/-1; text-align: center; color: var(--text-light);">Destinations populating soon...</p>
                 <?php endif; ?>
             </div>
