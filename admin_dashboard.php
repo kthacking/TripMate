@@ -1,7 +1,7 @@
-<?php 
-require_once 'admin_header.php'; 
+<?php
+require_once 'admin_header.php';
 
-// Fetch Stats
+// Fetch Stats (Keep as requested, though focus is on nav cards)
 $total_users = $conn->query("SELECT COUNT(*) as c FROM users")->fetch_assoc()['c'];
 $admin_count = $conn->query("SELECT COUNT(*) as c FROM users WHERE role='admin'")->fetch_assoc()['c'];
 $tm_count = $conn->query("SELECT COUNT(*) as c FROM users WHERE role='tripmaker'")->fetch_assoc()['c'];
@@ -13,216 +13,382 @@ $total_trips = $conn->query("SELECT COUNT(*) as c FROM trips")->fetch_assoc()['c
 
 $pending_reqs = $conn->query("SELECT COUNT(*) as c FROM enrollments WHERE status='pending'")->fetch_assoc()['c'];
 $total_media = $conn->query("SELECT COUNT(*) as c FROM media")->fetch_assoc()['c'];
-
-// Recent activity for the dashboard table
-$recent_logs = false;
-try {
-    $recent_logs = $conn->query("SELECT l.*, u.name as user_name FROM activity_logs l LEFT JOIN users u ON l.user_id = u.id ORDER BY l.created_at DESC LIMIT 5");
-} catch (Exception $e) { $recent_logs = false; }
 ?>
 
-<!-- Stat Grid -->
-<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 35px;">
-    
-    <div class="stat-card">
-        <div class="stat-header">
-            <div class="stat-icon" style="background: #EEF2FF; color: #6366F1;"><i class="ri-group-fill"></i></div>
-            <span class="stat-label">Total Users</span>
-        </div>
-        <div class="stat-value"><?php echo $total_users; ?></div>
-        <div class="stat-footer">
-            <i class="ri-user-star-line"></i> <span><?php echo $admin_count; ?> Admins · <?php echo $tm_count; ?> TM</span>
-        </div>
-    </div>
-
-    <div class="stat-card" style="border-left: 4px solid #10B981;">
-        <div class="stat-header">
-            <div class="stat-icon" style="background: #ECFDF5; color: #10B981;"><i class="ri-send-plane-fill"></i></div>
-            <span class="stat-label">Active Trips</span>
-        </div>
-        <div class="stat-value"><?php echo $active_trips; ?></div>
-        <div class="stat-footer">
-            <i class="ri-checkbox-circle-line"></i> <span><?php echo $completed_trips; ?> Completed</span>
-        </div>
-    </div>
-
-    <div class="stat-card" style="border-left: 4px solid #F59E0B;">
-        <div class="stat-header">
-            <div class="stat-icon" style="background: #FFFBEB; color: #F59E0B;"><i class="ri-user-add-fill"></i></div>
-            <span class="stat-label">Pending Requests</span>
-        </div>
-        <div class="stat-value"><?php echo $pending_reqs; ?></div>
-        <div class="stat-footer">
-            <i class="ri-time-line"></i> <span>Awaiting your review</span>
-        </div>
-    </div>
-
-    <div class="stat-card" style="border-left: 4px solid #EC4899;">
-        <div class="stat-header">
-            <div class="stat-icon" style="background: #FDF2F8; color: #EC4899;"><i class="ri-image-2-fill"></i></div>
-            <span class="stat-label">Media Assets</span>
-        </div>
-        <div class="stat-value"><?php echo $total_media; ?></div>
-        <div class="stat-footer">
-            <i class="ri-gallery-line"></i> <span>Shared moments</span>
-        </div>
-    </div>
-
-</div>
-
-<div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; align-items: start;">
-    
-    <!-- Recent Logs -->
-    <div class="admin-card" style="min-height: 440px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-            <h3 style="font-size: 1.15rem; font-weight: 850; color: var(--admin-text-main); letter-spacing: -0.5px;">System Audit Logs</h3>
-            <a href="admin_logs.php" style="font-size: 0.9rem; color: var(--admin-primary); font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 5px;">
-                View All <i class="ri-arrow-right-s-line"></i>
-            </a>
-        </div>
-        
-        <div style="overflow-x: auto;">
-            <table class="admin-table" style="width: 100%; border-collapse: separate; border-spacing: 0 12px;">
-                <thead>
-                    <tr style="text-align: left;">
-                        <th>User</th>
-                        <th>Action</th>
-                        <th style="text-align: right;">Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if($recent_logs && $recent_logs->num_rows > 0): while($log = $recent_logs->fetch_assoc()): ?>
-                    <tr style="background: #F8FAFC; transition: all 0.2s hover;">
-                        <td style="padding: 14px 20px; border-radius: 16px 0 0 16px;">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 34px; height: 34px; border-radius: 10px; background: white; border: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 800; color: var(--admin-primary);">
-                                    <?php echo $log['user_name'] ? strtoupper(substr($log['user_name'], 0, 1)) : 'S'; ?>
-                                </div>
-                                <span style="font-weight: 700; color: #334155; font-size: 0.9rem;"><?php echo htmlspecialchars($log['user_name'] ?? 'System'); ?></span>
-                            </div>
-                        </td>
-                        <td style="padding: 14px 20px;"><span style="font-size: 0.9rem; color: #64748B; font-weight: 500;"><?php echo htmlspecialchars($log['action']); ?></span></td>
-                        <td style="padding: 14px 20px; border-radius: 0 16px 16px 0; text-align: right;">
-                            <span style="font-size: 0.85rem; color: #94A3B8; font-weight: 600;"><?php echo date('M d, H:i', strtotime($log['created_at'])); ?></span>
-                        </td>
-                    </tr>
-                    <?php endwhile; else: ?>
-                        <tr>
-                            <td colspan="3" style="text-align: center; padding: 100px 0;">
-                                <div style="color: #94A3B8; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-                                    <div style="width: 64px; height: 64px; background: #F1F5F9; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                        <i class="ri-notification-off-line" style="font-size: 2rem; opacity: 0.6;"></i>
-                                    </div>
-                                    <span style="font-weight: 600; font-size: 1rem;">No recent system activity recorded</span>
-                                </div>
-                            </td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Right Sidebar Column -->
-    <div style="display: flex; flex-direction: column; gap: 30px;">
-        
-        <!-- Premium Health Status -->
-        <div style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: white; border-radius: 20px; padding: 35px; box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.2); position: relative; overflow: hidden;">
-            <div style="position: absolute; top: -20px; right: -20px; width: 150px; height: 150px; background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);"></div>
-            
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                <h3 style="font-size: 0.75rem; font-weight: 800; margin: 0; color: #94A3B8; text-transform: uppercase; letter-spacing: 2px;">System Health</h3>
-                <div style="display: flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.1); padding: 5px 12px; border-radius: 30px; border: 1px solid rgba(16, 185, 129, 0.2);">
-                    <div style="width: 7px; height: 7px; border-radius: 50%; background: #10B981; box-shadow: 0 0 10px #10B981; animation: pulse-health 2s infinite;"></div>
-                    <span style="font-size: 0.7rem; font-weight: 800; color: #10B981;">OPERATIONAL</span>
-                </div>
-            </div>
-            
-            <div style="margin-bottom: 30px;">
-                <div style="font-size: 1.5rem; font-weight: 850; margin-bottom: 8px; letter-spacing: -0.5px;">All Systems Go</div>
-                <p style="font-size: 0.88rem; color: #94A3B8; line-height: 1.6; margin: 0; font-weight: 500;">Your platform is performing optimally. Core services, database connectivity, and media servers are all in high-performance states.</p>
-            </div>
-
-            <button onclick="location.href='admin_settings.php'" class="btn-premium" style="width: 100%; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); color: white; justify-content: center; box-shadow: none;">
-                <i class="ri-settings-line"></i> View System Config
-            </button>
-        </div>
-
-        <!-- Better Quick Navigation -->
-        <div class="admin-card" style="padding: 25px;">
-            <h3 style="font-size: 1rem; color: var(--admin-text-main); font-weight: 850; margin-bottom: 20px; letter-spacing: -0.4px;">Quick Actions</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <a href="admin_users.php" class="action-tile">
-                    <i class="ri-user-add-line"></i>
-                    <span>Manage Users</span>
-                </a>
-                <a href="admin_requests.php" class="action-tile">
-                    <i class="ri-mail-send-line"></i>
-                    <span>Review Requests</span>
-                </a>
-                <a href="admin_media.php" class="action-tile">
-                    <i class="ri-folder-image-line"></i>
-                    <span>Media Library</span>
-                </a>
-                <a href="admin_analytics.php" class="action-tile">
-                    <i class="ri-line-chart-line"></i>
-                    <span>Platform Insights</span>
-                </a>
-            </div>
-        </div>
-    </div>
-
-</div>
-
 <style>
-@keyframes pulse-health {
-    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-}
+    /* Hide Default Navbar and Header */
+    .admin-nav, .admin-content > h2, .admin-content > div:first-child {
+        display: none !important;
+    }
 
-.action-tile {
-    background: #F8FAFC;
-    padding: 20px 10px;
-    border-radius: 16px;
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    color: #475569;
-    font-weight: 700;
-    font-size: 0.8rem;
-    border: 1px solid #F1F5F9;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+    body {
+        background-color: #F8F9FA;
+        position: relative;
+        overflow-x: hidden;
+    }
 
-.action-tile i {
-    font-size: 1.35rem;
-    color: var(--admin-primary);
-    background: white;
-    width: 42px;
-    height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-}
+    /* Geometric Background */
+    .geo-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+        background: radial-gradient(circle at 10% 20%, rgba(243, 232, 255, 0.5) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(220, 252, 231, 0.5) 0%, transparent 40%),
+                    radial-gradient(circle at 50% 50%, rgba(255, 237, 213, 0.4) 0%, transparent 60%);
+    }
 
-.action-tile:hover {
-    background: white;
-    border-color: var(--admin-primary);
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-premium);
-    color: var(--admin-primary);
-}
+    .geo-bg::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+        background-size: 50px 50px;
+    }
 
-.action-tile:hover i {
-    background: var(--admin-primary);
-    color: white;
-    transform: scale(1.1);
-}
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .welcome-section {
+        margin-bottom: 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    .welcome-text h1 {
+        font-size: 2.8rem;
+        font-weight: 900;
+        letter-spacing: -1.5px;
+        color: #1E293B;
+        margin: 0 0 10px 0;
+    }
+
+    .welcome-text p {
+        font-size: 1.1rem;
+        color: #64748B;
+        margin: 0;
+        font-weight: 500;
+    }
+
+    .logout-box-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: white;
+        padding: 12px 24px;
+        border-radius: 12px;
+        text-decoration: none;
+        color: #EF4444;
+        font-weight: 700;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid #F1F5F9;
+        transition: all 0.3s ease;
+    }
+
+    .logout-box-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        background: #FEF2F2;
+    }
+
+    /* Card Grid */
+    .nav-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+
+    .nav-card {
+        border-radius: 24px;
+        padding: 40px;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 280px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .nav-card::before {
+        content: '';
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        right: -50px;
+        top: -50px;
+        border-radius: 50%;
+        filter: blur(40px);
+        opacity: 0.5;
+        transition: all 0.4s ease;
+        z-index: 0;
+    }
+
+    .nav-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-card:hover::before {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+
+    .card-badge {
+        font-size: 0.75rem;
+        font-weight: 800;
+        padding: 6px 14px;
+        border-radius: 20px;
+        background: white;
+        display: inline-block;
+        margin-bottom: 25px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        width: fit-content;
+        position: relative;
+        z-index: 1;
+    }
+
+    .card-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .card-content h3 {
+        font-size: 1.8rem;
+        font-weight: 850;
+        color: #1E293B;
+        margin: 0 0 12px 0;
+        letter-spacing: -0.5px;
+    }
+
+    .card-content p {
+        font-size: 1rem;
+        color: #475569;
+        line-height: 1.6;
+        margin: 0;
+        font-weight: 500;
+        opacity: 0.8;
+    }
+
+    .card-action {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 30px;
+        font-weight: 700;
+        font-size: 1rem;
+        color: #1E293B;
+        position: relative;
+        z-index: 1;
+    }
+
+    .card-action i {
+        transition: transform 0.3s ease;
+    }
+
+    .nav-card:hover .card-action i {
+        transform: translateX(5px);
+    }
+
+    /* Individual Card Styles */
+    .card-users { background: #F3E8FF; } .card-users::before { background: #C084FC; } .card-users span { color: #9333EA; }
+    .card-trips { background: #DCFCE7; } .card-trips::before { background: #4ADE80; } .card-trips span { color: #16A34A; }
+    .card-requests { background: #FFEDD5; } .card-requests::before { background: #FB923C; } .card-requests span { color: #EA580C; }
+    .card-media { background: #F1F5F9; } .card-media::before { background: #94A3B8; } .card-media span { color: #475569; }
+    .card-analytics { background: #FEF3C7; } .card-analytics::before { background: #FBBF24; } .card-analytics span { color: #D97706; }
+    .card-logs { background: #FFE4E6; } .card-logs::before { background: #FB7185; } .card-logs span { color: #E11D48; }
+    .card-settings { background: #ECFEFF; } .card-settings::before { background: #22D3EE; } .card-settings span { color: #0891B2; }
+
+    /* Compact Stats */
+    .compact-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+
+    .mini-stat {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .mini-stat label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #94A3B8;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .mini-stat .value {
+        font-size: 1.4rem;
+        font-weight: 850;
+        color: #1E293B;
+    }
+
+    @media (max-width: 1024px) {
+        .nav-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+        .nav-grid { grid-template-columns: 1fr; }
+        .welcome-section { flex-direction: column; align-items: flex-start; gap: 20px; }
+        .welcome-text h1 { font-size: 2.2rem; }
+        .compact-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* Fix for 100% zoom and overflow */
+    .admin-content {
+        padding: 0 !important;
+        max-width: none !important;
+    }
+    
+    .admin-main {
+        overflow-x: hidden;
+    }
 </style>
 
-<?php require_once 'admin_footer.php'; ?>
+<div class="geo-bg"></div>
+
+<div class="dashboard-container">
+    <div class="welcome-section">
+        <div class="welcome-text">
+            <h1>Command Center</h1>
+            <p>Welcome back, <?php echo explode(' ', $_SESSION['name'])[0]; ?>. Everything is looking good today.</p>
+        </div>
+        <a href="logout.php" class="logout-box-btn">
+            <i class="ri-logout-box-r-line"></i> Secure Logout
+        </a>
+    </div>
+
+    <div class="nav-grid">
+        <!-- Users -->
+        <a href="admin_users.php" class="nav-card card-users">
+            <div>
+                <span class="card-badge">Total Users: <?php echo $total_users; ?></span>
+                <div class="card-content">
+                    <h3>Users</h3>
+                    <p>Manage user accounts, adjust roles (Admin, TM, Student), and manage permissions.</p>
+                </div>
+            </div>
+            <div class="card-action">Manage Directory <i class="ri-arrow-right-line"></i></div>
+        </a>
+
+        <!-- Trips -->
+        <a href="admin_trips.php" class="nav-card card-trips">
+            <div>
+                <span class="card-badge"><?php echo $active_trips; ?> Active Trips</span>
+                <div class="card-content">
+                    <h3>Trips</h3>
+                    <p>Create new travel experiences, oversee active itineraries, and manage bookings.</p>
+                </div>
+            </div>
+            <div class="card-action">View Manifest <i class="ri-arrow-right-line"></i></div>
+        </a>
+
+        <!-- Requests -->
+        <a href="admin_requests.php" class="nav-card card-requests">
+            <div>
+                <span class="card-badge"><?php echo $pending_reqs; ?> Pending</span>
+                <div class="card-content">
+                    <h3>Requests</h3>
+                    <p>Review and approve trip enrollment applications from students and participants.</p>
+                </div>
+            </div>
+            <div class="card-action">Open Inbox <i class="ri-arrow-right-line"></i></div>
+        </a>
+
+        <!-- Media -->
+        <a href="admin_media.php" class="nav-card card-media">
+            <div>
+                <span class="card-badge"><?php echo $total_media; ?> Assets</span>
+                <div class="card-content">
+                    <h3>Media</h3>
+                    <p>Moderate user-uploaded trip photos and manage the platform's visual gallery.</p>
+                </div>
+            </div>
+            <div class="card-action">Library <i class="ri-arrow-right-line"></i></div>
+        </a>
+
+        <!-- Analytics -->
+        <a href="admin_analytics.php" class="nav-card card-analytics">
+            <div>
+                <span class="card-badge">LIVE INSIGHTS</span>
+                <div class="card-content">
+                    <h3>Analytics</h3>
+                    <p>Track platform performance, user engagement metrics, and growth statistics.</p>
+                </div>
+            </div>
+            <div class="card-action">View Reports <i class="ri-arrow-right-line"></i></div>
+        </a>
+
+        <!-- Logs -->
+        <a href="admin_logs.php" class="nav-card card-logs">
+            <div>
+                <span class="card-badge">SYSTEM HEALTH</span>
+                <div class="card-content">
+                    <h3>Audit Logs</h3>
+                    <p>Monitor system activities, security events, and administrative action history.</p>
+                </div>
+            </div>
+            <div class="card-action">Monitor <i class="ri-arrow-right-line"></i></div>
+        </a>
+
+        <!-- Settings -->
+        <a href="admin_settings.php" class="nav-card card-settings">
+            <div>
+                <span class="card-badge">CONFIGURATION</span>
+                <div class="card-content">
+                    <h3>Settings</h3>
+                    <p>Configure platform preferences, site maintenance mode, and global metadata.</p>
+                </div>
+            </div>
+            <div class="card-action">Configure <i class="ri-arrow-right-line"></i></div>
+        </a>
+    </div>
+
+    <!-- Stats row at bottom for continuity -->
+    <div class="compact-stats">
+        <div class="mini-stat">
+            <label>Platform Users</label>
+            <div class="value"><?php echo $total_users; ?></div>
+        </div>
+        <div class="mini-stat">
+            <label>Active Expeditions</label>
+            <div class="value"><?php echo $active_trips; ?></div>
+        </div>
+        <div class="mini-stat">
+            <label>Pending Reviews</label>
+            <div class="value"><?php echo $pending_reqs; ?></div>
+        </div>
+        <div class="mini-stat">
+            <label>Media Assets</label>
+            <div class="value"><?php echo $total_media; ?></div>
+        </div>
+    </div>
+</div>
+
+<?php 
+// No changes to admin_footer.php or logic
+require_once 'admin_footer.php'; 
+?>
