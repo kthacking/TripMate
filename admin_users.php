@@ -474,11 +474,37 @@ $users = $conn->query("SELECT * FROM users WHERE $where ORDER BY created_at DESC
         to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
+    /* Full Responsiveness */
+    @media (max-width: 1200px) {
+        .header-text h1 { font-size: 2.4rem; }
+    }
+
+    @media (max-width: 992px) {
+        .dashboard-container { padding: 30px 20px; }
+        .user-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+        .header-text h1 { font-size: 2.2rem; }
+    }
+
     @media (max-width: 768px) {
         .page-header { flex-direction: column; align-items: flex-start; gap: 20px; }
-        .header-text h1 { font-size: 2.2rem; }
+        .header-text h1 { font-size: 2rem; }
         .user-grid { grid-template-columns: 1fr; }
-        .search-row { flex-direction: column; align-items: stretch; }
+        .filter-section { padding: 15px; border-radius: 16px; }
+        .search-row { flex-direction: column; align-items: stretch; gap: 10px; }
+        .modern-select, .btn-filter, .modern-input { width: 100%; height: 45px; }
+        .btn-modern { width: 100%; justify-content: center; }
+    }
+
+    @media (max-width: 480px) {
+        .header-text h1 { font-size: 1.8rem; }
+        .user-card { padding: 20px; }
+        .user-avatar { width: 50px; height: 50px; font-size: 1.4rem; border-radius: 14px; }
+        .user-name { font-size: 1.1rem; }
+        .user-email { font-size: 0.8rem; }
+        .badge-pill { font-size: 0.65rem; padding: 4px 10px; }
+        .meta-label { font-size: 0.65rem; }
+        .meta-value { font-size: 0.8rem; }
+        .action-btn { height: 38px; font-size: 0.8rem; border-radius: 10px; }
     }
 
     .admin-content { padding: 0 !important; max-width: none !important; }

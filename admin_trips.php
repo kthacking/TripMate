@@ -392,16 +392,37 @@ $trips = $conn->query("SELECT t.*, u.name as organizer FROM trips t JOIN users u
         to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    @media (max-width: 1024px) {
+    /* Full Responsiveness */
+    @media (max-width: 1200px) {
+        .header-text h1 { font-size: 2.4rem; }
+    }
+
+    @media (max-width: 992px) {
+        .dashboard-container { padding: 30px 20px; }
         .trip-grid { grid-template-columns: 1fr; }
+        .header-text h1 { font-size: 2.2rem; }
     }
 
     @media (max-width: 768px) {
         .page-header { flex-direction: column; align-items: flex-start; gap: 20px; }
-        .header-text h1 { font-size: 2.2rem; }
-        .trip-card { grid-template-columns: 100px 1fr; }
+        .trip-card { grid-template-columns: 100px 1fr; gap: 15px; padding: 15px; }
         .status-section { grid-column: 1 / -1; align-items: stretch; margin-top: 10px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 20px; }
         .trip-image-container { width: 100px; height: 100px; }
+        .trip-info-main h3 { font-size: 1.2rem; }
+        .header-text h1 { font-size: 2rem; }
+        .btn-launch { width: 100%; justify-content: center; }
+    }
+
+    @media (max-width: 480px) {
+        .header-text h1 { font-size: 1.8rem; }
+        .trip-card { grid-template-columns: 80px 1fr; gap: 12px; }
+        .trip-image-container { width: 80px; height: 80px; }
+        .trip-info-main h3 { font-size: 1.1rem; }
+        .location-text, .organizer-name { font-size: 0.8rem; }
+        .investment-tag { font-size: 1rem; }
+        .action-btn { width: 35px; height: 35px; border-radius: 10px; font-size: 1rem; }
+        .badge-pill { font-size: 0.65rem; padding: 4px 10px; }
+        .dropdown-menu { min-width: 160px; }
     }
 
     .admin-content { padding: 0 !important; max-width: none !important; }

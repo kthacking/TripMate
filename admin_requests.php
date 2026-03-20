@@ -293,16 +293,34 @@ $requests = $conn->query("SELECT e.*, u.name as student_name, u.email as student
         to { transform: translateY(0); opacity: 1; }
     }
 
-    @media (max-width: 1024px) {
+    /* Full Responsiveness */
+    @media (max-width: 1200px) {
+        .header-text h1 { font-size: 1.8rem; }
+    }
+
+    @media (max-width: 992px) {
+        .dashboard-container { padding: 40px 20px; }
         .request-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 768px) {
-        .dashboard-container { padding: 40px 16px; }
         .page-header { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 32px; }
-        .request-card { grid-template-columns: 1fr; gap: 16px; }
+        .request-card { grid-template-columns: 1fr; gap: 16px; padding: 16px; }
         .trip-info-box { border-left: none; padding-left: 0; margin-top: -8px; }
-        .actions-and-status { flex-direction: row; justify-content: space-between; align-items: center; border-top: 1px solid #F1F5F9; padding-top: 16px; }
+        .actions-and-status { flex-direction: row; justify-content: space-between; align-items: center; border-top: 1px solid #F1F5F9; padding-top: 16px; width: 100%; }
+        .btn-bulk { padding: 6px 12px; font-size: 0.75rem; }
+        .bulk-bar { flex-wrap: wrap; gap: 10px; padding: 10px; }
+        .bulk-label { width: 100%; margin-bottom: 5px; }
+    }
+
+    @media (max-width: 480px) {
+        .header-text h1 { font-size: 1.6rem; }
+        .student-info-box { gap: 12px; }
+        .student-initial { width: 36px; height: 36px; font-size: 0.9rem; }
+        .student-details h3 { font-size: 0.95rem; }
+        .status-badge { font-size: 0.65rem; padding: 3px 8px; }
+        .action-btn-minimal { width: 30px; height: 30px; font-size: 1rem; }
+        .btn-reapprove-min { font-size: 0.6rem; }
     }
 </style>
 
