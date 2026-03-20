@@ -22,6 +22,7 @@
         }
     }
 </script>
+<?php include_once 'cursor.php'; ?>
 </body>
 
 </html>

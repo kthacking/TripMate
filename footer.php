@@ -6,5 +6,6 @@
             <p style="color: var(--text-light);">&copy; <?php echo date('Y'); ?> TripMate. All rights reserved.</p>
         </div>
     </footer>
+<?php include_once 'cursor.php'; ?>
 </body>
 </html>

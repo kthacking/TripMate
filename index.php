@@ -521,5 +521,6 @@ $reviews = $conn->query("SELECT r.*, u.name as user_name FROM reviews r JOIN use
     // Prevent closing when clicking inside dropdown
     document.getElementById('adminLoginDropdown')?.addEventListener('click', function(e) { e.stopPropagation(); });
     </script>
+<?php include_once 'cursor.php'; ?>
 </body>
 </html>

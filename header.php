@@ -221,5 +221,3 @@ endif; ?>
     </nav>
     <!-- Content padding for fixed navbar -->
     <div style="height: 65px;"></div>
-</body>
-</html>
